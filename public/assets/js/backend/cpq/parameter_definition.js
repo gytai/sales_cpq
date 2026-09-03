@@ -1,0 +1,22 @@
+define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
+    var Controller = {
+        index: function () {
+            Table.api.init({extend: {index_url: 'cpq/parameter_definition/index' + location.search, add_url: 'cpq/parameter_definition/add', edit_url: 'cpq/parameter_definition/edit', del_url: 'cpq/parameter_definition/del', multi_url: 'cpq/parameter_definition/multi', table: 'cpq_parameter_definition'}});
+            var table = $('#table');
+            table.bootstrapTable({url: $.fn.bootstrapTable.defaults.extend.index_url, pk: 'id', sortName: 'id', sortOrder: 'desc', columns: [[
+                {checkbox: true},
+                {field: 'code', title: '参数编码', operate: 'LIKE'},
+                {field: 'name', title: '参数名称', operate: 'LIKE'},
+                {field: 'value_type', title: '值类型', searchList: Config.valueTypeList, formatter: Table.api.formatter.normal},
+                {field: 'unit', title: '单位'},
+                {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status},
+                {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+            ]]});
+            Table.api.bindevent(table);
+        },
+        add: function () { Controller.api.bindevent(); },
+        edit: function () { Controller.api.bindevent(); },
+        api: {bindevent: function () { Form.api.bindevent($('form[role=form]')); }}
+    };
+    return Controller;
+});

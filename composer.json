@@ -43,6 +43,10 @@
             "addons\\": "addons/"
         }
     },
+    "scripts": {
+        "test:cpq": "php tests/cpq/run.php",
+        "test:cpq-integration": "php tests/cpq/integration.php"
+    },
     "repositories": [
         {
             "type": "git",

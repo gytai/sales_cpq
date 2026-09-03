@@ -1,0 +1,197 @@
+openapi: "3.0.3"
+info:
+  title: CPQ API（FastAdmin 报价系统）
+  version: 1.0.0
+  description: |
+    统一前缀 `/api/cpq/v1`，通过 `application/route.php` 显式注册。
+    响应保持 FastAdmin `Api` 基类外壳；业务错误码与追踪号放入 `data`。
+
+    状态标记：`implemented` = 当前仓库已实现并有测试；`planned` = 方案规划，里程碑见标注。
+
+servers:
+  - url: /api/cpq/v1
+    description: 相对路径（同域部署）
+
+paths:
+  /product-models:
+    get:
+      tags: [产品配置]
+      summary: 查询可售型号（implemented, M1）
+      responses:
+        "200":
+          description: 型号列表
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /product-models/{id}/schema:
+    get:
+      tags: [产品配置]
+      summary: 获取配置结构和有效规则版本（implemented, M1）
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "200":
+          description: 配置 schema（groups/options/rules）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /configurations/validate:
+    post:
+      tags: [产品配置]
+      summary: 校验配置并返回规则结果（implemented, M1）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model_id, configuration]
+              properties:
+                model_id: {type: integer}
+                configuration:
+                  type: object
+                  additionalProperties: true
+                context:
+                  type: object
+                  description: 客户/市场上下文（预留）
+      responses:
+        "200":
+          description: 校验结果（is_valid/configuration/errors/warnings/bom/configuration_hash）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /configurations/bom:
+    post:
+      tags: [产品配置]
+      summary: 生成模拟 BOM（implemented, M1）
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model_id, configuration]
+              properties:
+                model_id: {type: integer}
+                configuration: {type: object}
+      responses:
+        "200":
+          description: BOM 行列表（material_code/quantity/unit/loss_rate）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+
+  /prices/calculate:
+    post:
+      tags: [价格]
+      summary: 确定性价格试算（planned, M2）
+      responses:
+        "200": {description: 价格结果与轨迹}
+  /prices/explain:
+    post:
+      tags: [价格]
+      summary: 返回授权范围内的价格轨迹（planned, M2）
+      responses:
+        "200": {description: 按权限裁剪后的 price_trace}
+
+  /quotes:
+    get:
+      tags: [报价]
+      summary: 报价列表（planned, M2）
+      responses:
+        "200": {description: 分页列表}
+    post:
+      tags: [报价]
+      summary: 新建报价草稿（planned, M2）
+      responses:
+        "201": {description: 草稿}
+  /quotes/{id}:
+    get:
+      tags: [报价]
+      summary: 报价详情（planned, M2）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "200": {description: 详情}
+  /quotes/{id}/draft:
+    put:
+      tags: [报价]
+      summary: 修改草稿（planned, M2）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "200": {description: 更新后的草稿}
+  /quotes/{id}/revisions:
+    post:
+      tags: [报价]
+      summary: 创建修订版本（planned, M2）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "201": {description: 新版本}
+  /quotes/{id}/submit:
+    post:
+      tags: [报价]
+      summary: 最终重算并提交审批（planned, M2）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "200": {description: 审批实例}
+  /quotes/{id}/withdraw:
+    post:
+      tags: [报价]
+      summary: 撤回审批（planned, M3）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "200": {description: 撤回结果}
+  /quotes/{id}/documents:
+    post:
+      tags: [报价]
+      summary: 生成报价 PDF（异步任务, planned, M3）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "202": {description: 任务受理，轮询 jobs 接口}
+  /approval-tasks:
+    get:
+      tags: [审批]
+      summary: 我的审批任务（planned, M3）
+      responses:
+        "200": {description: 任务列表}
+  /approval-tasks/{id}/actions:
+    post:
+      tags: [审批]
+      summary: 执行审批动作（planned, M3）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "200": {description: 动作结果}
+  /imports/{type}:
+    post:
+      tags: [任务]
+      summary: 创建导入任务（planned, M2+）
+      parameters: [{name: type, in: path, required: true, schema: {type: string}}]
+      responses:
+        "202": {description: 任务受理}
+  /jobs/{id}:
+    get:
+      tags: [任务]
+      summary: 查询异步任务（planned, M2+）
+      parameters: [{name: id, in: path, required: true, schema: {type: string}}]
+      responses:
+        "200": {description: 任务状态}
+
+components:
+  schemas:
+    Envelope:
+      type: object
+      description: FastAdmin Api 基类响应外壳
+      properties:
+        code: {type: integer, example: 1}
+        msg: {type: string, example: OK}
+        time: {type: integer, example: 1788400000}
+        data:
+          type: object
+          properties:
+            business_code: {type: string, example: OK}
+            trace_id: {type: string, example: "01J..."}
+            payload: {type: object}
+  securitySchemes: {}
+security: []

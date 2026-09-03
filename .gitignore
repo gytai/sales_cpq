@@ -8,12 +8,15 @@
 /public/uploads/*
 .DS_Store
 .idea
-composer.lock
+# composer.lock 必须入库锁定依赖组合（方案 §9.2 / docs/adr/0002）
 *.log
 *.css.map
 !.gitkeep
 .env
+.env.docker
 .svn
 .vscode
 node_modules
 .user.ini
+# 运行时产物
+.docker/

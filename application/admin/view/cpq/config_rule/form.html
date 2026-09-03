@@ -1,0 +1,56 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <input type="hidden" name="row[status]" value="{$row.status|htmlentities}">
+    <div class="alert alert-info">
+        规则只接受受控 JSON 条件和动作，不执行 PHP、JavaScript 或 SQL 表达式。
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">规则编码:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[code]" value="{$row.code|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">规则类型:</label>
+        <div class="col-xs-12 col-sm-3">{:build_select('row[type]', $typeList, $row.type, ['class'=>'form-control selectpicker'])}</div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">规则名称:</label>
+        <div class="col-xs-12 col-sm-8"><input class="form-control" data-rule="required" name="row[name]" value="{$row.name|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">适用型号:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control selectpage" data-source="cpq/product_model/index" data-field="name" name="row[model_id]" value="{$row.model_id|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">适用产品线:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[product_line]" value="{$row.product_line|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">条件 JSON:</label>
+        <div class="col-xs-12 col-sm-8"><textarea class="form-control cpq-json-editor" rows="6" data-rule="required" name="row[condition_json]">{$row.condition_json|htmlentities}</textarea><p class="help-block">支持 all、any、not，以及 field、operator、value。</p></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">动作 JSON:</label>
+        <div class="col-xs-12 col-sm-8"><textarea class="form-control cpq-json-editor" rows="7" data-rule="required" name="row[action_json]">{$row.action_json|htmlentities}</textarea><p class="help-block">支持 require、exclude、one_of、min_max、hide、show、default、set、formula、warning。</p></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">优先级:</label>
+        <div class="col-xs-12 col-sm-2"><input class="form-control" type="number" name="row[priority]" value="{$row.priority|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">严重级别:</label>
+        <div class="col-xs-12 col-sm-2">{:build_select('row[severity]', $severityList, $row.severity, ['class'=>'form-control selectpicker'])}</div>
+        <label class="control-label col-xs-12 col-sm-2">版本:</label>
+        <div class="col-xs-12 col-sm-2"><input class="form-control" type="number" min="1" name="row[version]" value="{$row.version|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">提示信息:</label>
+        <div class="col-xs-12 col-sm-8"><input class="form-control" name="row[message]" value="{$row.message|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">规则说明:</label>
+        <div class="col-xs-12 col-sm-8"><textarea class="form-control" rows="3" name="row[description]">{$row.description|htmlentities}</textarea></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">生效日期:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control datetimepicker" data-date-format="YYYY-MM-DD" name="row[effective_date]" value="{$row.effective_date|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">失效日期:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control datetimepicker" data-date-format="YYYY-MM-DD" name="row[expiry_date]" value="{$row.expiry_date|htmlentities}"></div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div>
+    </div>
+</form>

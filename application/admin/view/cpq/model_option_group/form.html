@@ -1,0 +1,11 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group"><label class="control-label col-xs-12 col-sm-2">产品型号:</label><div class="col-xs-12 col-sm-8"><input class="form-control selectpage" data-rule="required" data-source="cpq/product_model/index" data-field="name" name="row[model_id]" value="{$row.model_id|htmlentities}"></div></div>
+    <div class="form-group"><label class="control-label col-xs-12 col-sm-2">配置组:</label><div class="col-xs-12 col-sm-8"><input class="form-control selectpage" data-rule="required" data-source="cpq/option_group/index" data-field="name" name="row[group_id]" value="{$row.group_id|htmlentities}"></div></div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">可见:</label><div class="col-xs-12 col-sm-3">{:build_radios('row[is_visible]', ['1'=>'是','0'=>'否'], $row.is_visible)}</div>
+        <label class="control-label col-xs-12 col-sm-2">必选:</label><div class="col-xs-12 col-sm-3">{:build_radios('row[is_required]', ['1'=>'是','0'=>'否'], $row.is_required)}</div>
+    </div>
+    <div class="form-group"><label class="control-label col-xs-12 col-sm-2">默认值 JSON:</label><div class="col-xs-12 col-sm-8"><textarea class="form-control" rows="3" name="row[default_value]" placeholder='单选示例："standard"；多选示例：["A","B"]'>{$row.default_value|htmlentities}</textarea></div></div>
+    <div class="form-group"><label class="control-label col-xs-12 col-sm-2">排序:</label><div class="col-xs-12 col-sm-3"><input class="form-control" type="number" name="row[sort]" value="{$row.sort|htmlentities}"></div></div>
+    <div class="form-group layer-footer"><label class="control-label col-xs-12 col-sm-2"></label><div class="col-xs-12 col-sm-8"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div></div>
+</form>

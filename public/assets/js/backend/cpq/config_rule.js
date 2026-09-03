@@ -25,7 +25,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                     {field: 'priority', title: '优先级'},
                     {field: 'severity', title: '严重级别', searchList: Config.severityList, formatter: Table.api.formatter.normal},
                     {field: 'version', title: '版本', operate: false},
-                    {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status},
+                    {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},
                     {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, buttons: CpqCommon.versionButtons('cpq/config_rule'), formatter: Table.api.formatter.operate}
                 ]]
             });

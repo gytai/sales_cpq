@@ -11,7 +11,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                 {field: 'market_scope', title: '适用市场'},
                 {field: 'customer_level', title: '客户等级'},
                 {field: 'version', title: '版本', operate: false},
-                {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status},
+                {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},
                 {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, buttons: CpqCommon.versionButtons('cpq/config_template'), formatter: Table.api.formatter.operate}
             ]]});
             Table.api.bindevent(table);

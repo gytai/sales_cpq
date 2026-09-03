@@ -1,6 +1,68 @@
 define(['jquery', 'bootstrap', 'backend', 'fast'], function ($, undefined, Backend, Fast) {
     var currentSchema = null;
 
+    // 仅做展示与交互：配置合法性、价格与 BOM 均以后端返回为准，不在此处实现业务规则。
+
+    function groupName(code) {
+        var name = code;
+        $.each((currentSchema && currentSchema.groups) || [], function (_, group) {
+            if (group.code === code) {
+                name = group.name;
+                return false;
+            }
+        });
+        return name;
+    }
+
+    // 将后端 issue.path（如 configuration.features 或 features）解析为页面上的配置组编码
+    function resolveGroupCode(path) {
+        if (!path) {
+            return '';
+        }
+        var code = String(path).split('.').pop();
+        return $('.cpq-group[data-group-code="' + code + '"]').length ? code : '';
+    }
+
+    // 滚动定位到指定配置组并给出视觉反馈
+    function locateGroup(code) {
+        var panel = $('.cpq-group[data-group-code="' + code + '"]');
+        if (!panel.length) {
+            return;
+        }
+        $('#cpq-group-nav .list-group-item').removeClass('active');
+        $('#cpq-group-nav .list-group-item[data-group-code="' + code + '"]').addClass('active');
+        var node = panel.get(0);
+        if (node && node.scrollIntoView) {
+            node.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+        panel.stop(true).css('opacity', 0.4).animate({opacity: 1}, 600);
+        var firstInput = panel.find('input').first();
+        if (firstInput.length) {
+            firstInput.trigger('focus');
+        }
+    }
+
+    function clearHighlights() {
+        $('.cpq-group').removeClass('panel-danger panel-warning').addClass('panel-default');
+        $('#cpq-group-nav .cpq-nav-flag').empty();
+    }
+
+    function renderNav(schema) {
+        var nav = $('#cpq-group-nav').empty();
+        $.each(schema.groups || [], function (_, group) {
+            var item = $('<a href="javascript:;" class="list-group-item"></a>').attr('data-group-code', group.code);
+            item.append('<span class="cpq-nav-flag pull-right"></span>');
+            item.append(document.createTextNode(group.name));
+            if (group.is_required) {
+                item.append(' ').append('<span class="label label-danger">必选</span>');
+            }
+            item.on('click', function () {
+                locateGroup(group.code);
+            });
+            nav.append(item);
+        });
+    }
+
     function renderGroups(schema) {
         var container = $('#cpq-groups').empty();
         $.each(schema.groups || [], function (_, group) {
@@ -54,6 +116,8 @@ define(['jquery', 'bootstrap', 'backend', 'fast'], function ($, undefined, Backe
             container.append(panel);
         });
 
+        renderNav(schema);
+        clearHighlights();
         $('#cpq-model-title').text(schema.model.code + ' - ' + schema.model.name);
         $('#cpq-empty').addClass('hidden');
         $('#cpq-workspace').removeClass('hidden');
@@ -91,6 +155,39 @@ define(['jquery', 'bootstrap', 'backend', 'fast'], function ($, undefined, Backe
         $('#cpq-summary').text(JSON.stringify(configuration || collectConfiguration(), null, 2));
     }
 
+    // 把后端校验错误/警告定位到具体配置组：面板变色、导航角标、列表可点击跳转
+    function applyIssueHighlights(validation) {
+        clearHighlights();
+        var firstErrorCode = '';
+
+        function mark(issues, panelClass, flagClass, flagText) {
+            $.each(issues || [], function (_, issue) {
+                var code = resolveGroupCode(issue.path);
+                if (!code) {
+                    return;
+                }
+                var panel = $('.cpq-group[data-group-code="' + code + '"]');
+                // 错误优先级高于警告，已标红的组不再降级为警告色
+                if (!panel.hasClass('panel-danger')) {
+                    panel.removeClass('panel-default panel-warning').addClass(panelClass);
+                }
+                var flag = $('#cpq-group-nav .list-group-item[data-group-code="' + code + '"] .cpq-nav-flag');
+                if (flagClass === 'label-danger' || flag.find('.label-danger').length === 0) {
+                    flag.html('<span class="label ' + flagClass + '">' + flagText + '</span>');
+                }
+                if (panelClass === 'panel-danger' && !firstErrorCode) {
+                    firstErrorCode = code;
+                }
+            });
+        }
+
+        mark(validation.errors, 'panel-danger', 'label-danger', '错误');
+        mark(validation.warnings, 'panel-warning', 'label-warning', '警告');
+        if (firstErrorCode) {
+            locateGroup(firstErrorCode);
+        }
+    }
+
     function renderIssues(validation) {
         var target = $('#cpq-validation').empty();
         var badge = validation.is_valid
@@ -105,7 +202,20 @@ define(['jquery', 'bootstrap', 'backend', 'fast'], function ($, undefined, Backe
             target.append($('<h5></h5>').text(title));
             var list = $('<ul></ul>').addClass(className);
             $.each(issues, function (_, issue) {
-                list.append($('<li></li>').text(issue.message + (issue.rule_code ? ' [' + issue.rule_code + ']' : '')));
+                var text = issue.message + (issue.rule_code ? ' [' + issue.rule_code + ']' : '');
+                var item = $('<li></li>');
+                var code = resolveGroupCode(issue.path);
+                if (code) {
+                    var link = $('<a href="javascript:;" title="点击定位到配置组"></a>')
+                        .text('[' + groupName(code) + '] ' + text);
+                    link.on('click', function () {
+                        locateGroup(code);
+                    });
+                    item.append(link);
+                } else {
+                    item.text(text);
+                }
+                list.append(item);
             });
             target.append(list);
         }
@@ -134,8 +244,10 @@ define(['jquery', 'bootstrap', 'backend', 'fast'], function ($, undefined, Backe
 
     function applyVisibility(hiddenGroups) {
         $('.cpq-group').removeClass('hidden');
+        $('#cpq-group-nav .list-group-item').removeClass('hidden');
         $.each(hiddenGroups || [], function (_, code) {
             $('.cpq-group[data-group-code="' + code + '"]').addClass('hidden');
+            $('#cpq-group-nav .list-group-item[data-group-code="' + code + '"]').addClass('hidden');
         });
     }
 
@@ -159,6 +271,7 @@ define(['jquery', 'bootstrap', 'backend', 'fast'], function ($, undefined, Backe
             $(document).on('click', '#cpq-reset', function () {
                 if (currentSchema) {
                     renderGroups(currentSchema);
+                    applyVisibility([]);
                     $('#cpq-validation').text('尚未校验');
                     renderBom([]);
                 }
@@ -176,6 +289,7 @@ define(['jquery', 'bootstrap', 'backend', 'fast'], function ($, undefined, Backe
                     data: {model_id: modelId, configuration: JSON.stringify(collectConfiguration())}
                 }, function (validation) {
                     renderIssues(validation);
+                    applyIssueHighlights(validation);
                     renderBom(validation.bom);
                     applyVisibility(validation.hidden_groups);
                     updateSummary(validation.configuration);

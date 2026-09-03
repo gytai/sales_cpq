@@ -20,6 +20,7 @@ VALUES
   ('cooling_level','散热等级','Cooling Level','single',0,0,1,1,1,'高功率场景需要增强散热',20,'normal',UNIX_TIMESTAMP(),UNIX_TIMESTAMP()),
   ('features','功能模块','Feature Modules','multiple',1,1,2,1,1,'最多选择两个功能模块',30,'normal',UNIX_TIMESTAMP(),UNIX_TIMESTAMP()),
   ('quantity','设备数量','Quantity','number',1,0,0,1,0,'允许范围为1到10',40,'normal',UNIX_TIMESTAMP(),UNIX_TIMESTAMP()),
+  ('delivery_note','交付备注','Delivery Note','text',0,0,0,0,0,'特殊交付要求说明',45,'normal',UNIX_TIMESTAMP(),UNIX_TIMESTAMP()),
   ('calculated_capacity','计算容量','Calculated Capacity','readonly',0,0,0,0,0,'由规则自动计算',50,'normal',UNIX_TIMESTAMP(),UNIX_TIMESTAMP())
 ON DUPLICATE KEY UPDATE `name`=VALUES(`name`),`input_type`=VALUES(`input_type`),`updatetime`=UNIX_TIMESTAMP();
 
@@ -72,7 +73,7 @@ SELECT `m`.`id`,`g`.`id`,`g`.`sort`,1,`g`.`is_required`,
   UNIX_TIMESTAMP(),UNIX_TIMESTAMP()
 FROM `__PREFIX__cpq_product_model` `m`
 CROSS JOIN `__PREFIX__cpq_option_group` `g`
-WHERE `m`.`code`='CPQ-DEMO-EQUIPMENT-A' AND `g`.`code` IN ('power_level','cooling_level','features','quantity','calculated_capacity')
+WHERE `m`.`code`='CPQ-DEMO-EQUIPMENT-A' AND `g`.`code` IN ('power_level','cooling_level','features','quantity','delivery_note','calculated_capacity')
 ON DUPLICATE KEY UPDATE `sort`=VALUES(`sort`),`is_required`=VALUES(`is_required`),`default_value`=VALUES(`default_value`),`updatetime`=UNIX_TIMESTAMP();
 
 INSERT INTO `__PREFIX__cpq_config_rule`

@@ -1,4 +1,4 @@
-define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
+define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common'], function ($, undefined, Backend, Table, Form, CpqCommon) {
     var Controller = {
         index: function () {
             Table.api.init({extend: {index_url: 'cpq/parameter_definition/index' + location.search, add_url: 'cpq/parameter_definition/add', edit_url: 'cpq/parameter_definition/edit', del_url: 'cpq/parameter_definition/del', multi_url: 'cpq/parameter_definition/multi', table: 'cpq_parameter_definition'}});
@@ -9,7 +9,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 {field: 'name', title: '参数名称', operate: 'LIKE'},
                 {field: 'value_type', title: '值类型', searchList: Config.valueTypeList, formatter: Table.api.formatter.normal},
                 {field: 'unit', title: '单位'},
-                {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status},
+                {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},
                 {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
             ]]});
             Table.api.bindevent(table);

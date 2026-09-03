@@ -1,4 +1,4 @@
-define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
+define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common'], function ($, undefined, Backend, Table, Form, CpqCommon) {
     var Controller = {
         index: function () {
             Table.api.init({extend: {
@@ -23,7 +23,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     {field: 'material_code', title: '物料编码', operate: 'LIKE'},
                     {field: 'default_qty', title: '默认数量', operate: false},
                     {field: 'price_key', title: '价格引用键'},
-                    {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status},
+                    {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},
                     {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                 ]]
             });

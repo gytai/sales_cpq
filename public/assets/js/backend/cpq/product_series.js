@@ -23,7 +23,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                     {field: 'product_line', title: '产品线'},
                     {field: 'default_currency', title: '币种'},
                     {field: 'version', title: '版本', operate: false},
-                    {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status},
+                    {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},
                     {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange'},
                     {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, buttons: CpqCommon.versionButtons('cpq/product_series'), formatter: Table.api.formatter.operate}
                 ]]

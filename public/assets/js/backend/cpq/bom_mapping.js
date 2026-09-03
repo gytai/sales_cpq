@@ -12,7 +12,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                 {field: 'unit', title: '单位'},
                 {field: 'loss_rate', title: '损耗率'},
                 {field: 'version', title: '版本', operate: false},
-                {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status},
+                {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},
                 {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, buttons: CpqCommon.directPublishButtons('cpq/bom_mapping'), formatter: Table.api.formatter.operate}
             ]]});
             Table.api.bindevent(table);

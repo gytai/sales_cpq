@@ -1,5 +1,14 @@
 define([], function () {
     return {
+        // CPQ 状态徽标统一配色（Bootstrap label 颜色，扩展 FastAdmin 默认 custom 映射）
+        statusCustom: {
+            draft: 'gray',
+            pending: 'warning',
+            published: 'success',
+            expired: 'danger',
+            normal: 'success',
+            hidden: 'gray'
+        },
         booleanFormatter: function (value) {
             return parseInt(value, 10) === 1
                 ? '<span class="label label-success">是</span>'

@@ -24,7 +24,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                     {field: 'max_select', title: '最多选择', operate: false},
                     {field: 'affects_price', title: '影响价格', searchList: {'1': '是', '0': '否'}, formatter: CpqCommon.booleanFormatter},
                     {field: 'affects_bom', title: '影响BOM', searchList: {'1': '是', '0': '否'}, formatter: CpqCommon.booleanFormatter},
-                    {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status},
+                    {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},
                     {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                 ]]
             });

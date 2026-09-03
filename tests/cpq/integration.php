@@ -22,7 +22,7 @@ expectIntegration(count($models) >= 1, '至少应存在一个已发布演示型�
 
 $schema = $repository->getPublishedSchema($models[0]['id']);
 expectIntegration($schema['model']['code'] === 'CPQ-DEMO-EQUIPMENT-A', '应读取到演示型号');
-expectIntegration(count($schema['groups']) === 5, '演示型号应包含五个配置组');
+expectIntegration(count($schema['groups']) === 6, '演示型号应包含六个配置组');
 expectIntegration(count($schema['rules']) === 4, '演示型号应包含四条已发布规则');
 
 $service = new ConfigurationService();

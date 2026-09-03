@@ -24,7 +24,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                     {field: 'base_item_code', title: '基础物料编码', operate: 'LIKE'},
                     {field: 'unit', title: '单位'},
                     {field: 'version', title: '版本', operate: false},
-                    {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status},
+                    {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},
                     {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange'},
                     {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, buttons: CpqCommon.versionButtons('cpq/product_model'), formatter: Table.api.formatter.operate}
                 ]]

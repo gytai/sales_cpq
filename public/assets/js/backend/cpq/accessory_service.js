@@ -11,7 +11,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                 {field: 'unit', title: '单位'},
                 {field: 'product_line', title: '产品线'},
                 {field: 'is_inventory_item', title: '库存物料', searchList: {'1': '是', '0': '否'}, formatter: CpqCommon.booleanFormatter},
-                {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status},
+                {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},
                 {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
             ]]});
             Table.api.bindevent(table);

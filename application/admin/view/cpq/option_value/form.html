@@ -1,0 +1,56 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">配置组:</label>
+        <div class="col-xs-12 col-sm-8"><input class="form-control selectpage" data-rule="required" data-source="cpq/option_group/index" data-field="name" name="row[group_id]" value="{$row.group_id|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">选项编码:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[code]" value="{$row.code|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">物料编码:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[material_code]" value="{$row.material_code|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">中文名称:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[name]" value="{$row.name|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">英文名称:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[name_en]" value="{$row.name_en|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">默认数量:</label>
+        <div class="col-xs-12 col-sm-2"><input class="form-control" type="number" step="0.0001" name="row[default_qty]" value="{$row.default_qty|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">最小数量:</label>
+        <div class="col-xs-12 col-sm-2"><input class="form-control" type="number" step="0.0001" name="row[min_qty]" value="{$row.min_qty|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">最大数量:</label>
+        <div class="col-xs-12 col-sm-2"><input class="form-control" type="number" step="0.0001" name="row[max_qty]" value="{$row.max_qty|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">数量步长:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" type="number" step="0.0001" name="row[step]" value="{$row.step|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">排序权重:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" type="number" name="row[weigh]" value="{$row.weigh|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">价格引用键:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[price_key]" value="{$row.price_key|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">成本引用键:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[cost_key]" value="{$row.cost_key|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">图片:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group"><input id="c-image" class="form-control" name="row[image]" value="{$row.image|htmlentities}"><div class="input-group-addon no-border no-padding"><button type="button" id="faupload-image" class="btn btn-danger faupload" data-input-id="c-image" data-mimetype="image/*" data-multiple="false"><i class="fa fa-upload"></i> 上传</button></div></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">技术参数 JSON:</label>
+        <div class="col-xs-12 col-sm-8"><textarea class="form-control" rows="4" name="row[parameter_json]">{$row.parameter_json|htmlentities}</textarea></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">状态:</label>
+        <div class="col-xs-12 col-sm-8">{:build_radios('row[status]', $statusList, $row.status)}</div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div>
+    </div>
+</form>

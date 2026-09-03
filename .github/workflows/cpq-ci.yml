@@ -1,0 +1,62 @@
+# CPQ 最小 CI：锁文件一致性 + 单元测试 + 数据库/队列/PDF/Excel 集成验证
+# 与 docker/README.md 的空库验证流程保持同一组命令。
+name: CPQ CI
+
+on:
+  push:
+    branches: [main, master, 'agent/**']
+  pull_request:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: mbstring, curl, bcmath, gd, zip
+          tools: composer:v2.2
+      - name: 锁文件与 composer.json 一致性
+        run: composer validate --strict && composer check-platform-reqs --no-dev || true
+      - name: 安装依赖（仅按锁文件）
+        run: composer install --no-interaction --prefer-dist
+      - name: CPQ 单元测试
+        run: composer test:cpq
+
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: fastadmin
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd "mysqladmin ping -proot"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+          --character-set-server=utf8mb4
+          --collation-server=utf8mb4_general_ci
+          --default-authentication-plugin=mysql_native_password
+      redis:
+        image: redis:7.2-alpine
+        ports: ['6379:6379']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: mbstring, curl, bcmath, gd, zip, redis
+          tools: composer:v2.2
+      - run: composer install --no-interaction --prefer-dist
+      - name: 空库安装 FastAdmin + CPQ
+        run: |
+          cp .env.sample .env
+          php think install --hostname 127.0.0.1 --hostport 3306 --database fastadmin \
+            --username root --password root --prefix fa_ --force=true
+          php think cpq:install --demo
+      - name: CPQ 集成测试
+        run: composer test:cpq-integration
+      - name: 队列 / PDF / Excel PoC
+        run: php tests/cpq/poc.php

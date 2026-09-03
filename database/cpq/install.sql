@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_product_series` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_cpq_product_series_code` (`code`),
   KEY `idx_cpq_product_series_line_status` (`product_line`,`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ产品系列';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ产品系列';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_product_model` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_product_model` (
   UNIQUE KEY `uk_cpq_product_model_code` (`code`),
   KEY `idx_cpq_product_model_series_status` (`series_id`,`status`),
   CONSTRAINT `fk_cpq_product_model_series` FOREIGN KEY (`series_id`) REFERENCES `__PREFIX__cpq_product_series` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ产品型号';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ产品型号';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_parameter_definition` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_parameter_definition` (
   `updatetime` INT UNSIGNED NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_cpq_parameter_definition_code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ技术参数定义';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ技术参数定义';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_model_parameter` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_model_parameter` (
   UNIQUE KEY `uk_cpq_model_parameter` (`model_id`,`parameter_id`),
   CONSTRAINT `fk_cpq_model_parameter_model` FOREIGN KEY (`model_id`) REFERENCES `__PREFIX__cpq_product_model` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT `fk_cpq_model_parameter_parameter` FOREIGN KEY (`parameter_id`) REFERENCES `__PREFIX__cpq_parameter_definition` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ型号技术参数';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ型号技术参数';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_option_group` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_option_group` (
   `updatetime` INT UNSIGNED NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_cpq_option_group_code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ配置组';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ配置组';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_option_value` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_option_value` (
   UNIQUE KEY `uk_cpq_option_value_code` (`group_id`,`code`),
   KEY `idx_cpq_option_value_group_status` (`group_id`,`status`),
   CONSTRAINT `fk_cpq_option_value_group` FOREIGN KEY (`group_id`) REFERENCES `__PREFIX__cpq_option_group` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ配置选项';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ配置选项';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_model_option_group` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_model_option_group` (
   UNIQUE KEY `uk_cpq_model_option_group` (`model_id`,`group_id`),
   CONSTRAINT `fk_cpq_model_option_group_model` FOREIGN KEY (`model_id`) REFERENCES `__PREFIX__cpq_product_model` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT `fk_cpq_model_option_group_group` FOREIGN KEY (`group_id`) REFERENCES `__PREFIX__cpq_option_group` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ型号配置结构';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ型号配置结构';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_config_rule` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_config_rule` (
   UNIQUE KEY `uk_cpq_config_rule_code_version` (`code`,`version`),
   KEY `idx_cpq_config_rule_scope_status` (`model_id`,`product_line`,`status`),
   CONSTRAINT `fk_cpq_config_rule_model` FOREIGN KEY (`model_id`) REFERENCES `__PREFIX__cpq_product_model` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ配置规则';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ配置规则';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_config_template` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_config_template` (
   UNIQUE KEY `uk_cpq_config_template_code_version` (`code`,`version`),
   KEY `idx_cpq_config_template_model_status` (`model_id`,`status`),
   CONSTRAINT `fk_cpq_config_template_model` FOREIGN KEY (`model_id`) REFERENCES `__PREFIX__cpq_product_model` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ配置模板';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ配置模板';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_accessory_service` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_accessory_service` (
   `updatetime` INT UNSIGNED NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_cpq_accessory_service_code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ配件与服务';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ配件与服务';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_bom_mapping` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_bom_mapping` (
   KEY `idx_cpq_bom_mapping_model_status` (`model_id`,`status`),
   CONSTRAINT `fk_cpq_bom_mapping_model` FOREIGN KEY (`model_id`) REFERENCES `__PREFIX__cpq_product_model` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
   CONSTRAINT `fk_cpq_bom_mapping_option` FOREIGN KEY (`option_value_id`) REFERENCES `__PREFIX__cpq_option_value` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ配置BOM映射';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ配置BOM映射';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_price_book` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -243,7 +243,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_price_book` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_cpq_price_book_code_version` (`code`,`version`),
   KEY `idx_cpq_price_book_scope` (`company`,`business_unit`,`market_scope`,`currency`,`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ价格表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ价格表';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_price_entry` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -260,7 +260,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_price_entry` (
   UNIQUE KEY `uk_cpq_price_entry` (`price_book_id`,`target_type`,`target_id`,`min_qty`),
   KEY `idx_cpq_price_entry_target` (`target_type`,`target_id`),
   CONSTRAINT `fk_cpq_price_entry_book` FOREIGN KEY (`price_book_id`) REFERENCES `__PREFIX__cpq_price_book` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ价格条目';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ价格条目';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_price_policy` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -294,7 +294,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_price_policy` (
   UNIQUE KEY `uk_cpq_price_policy_code_version` (`code`,`version`),
   KEY `idx_cpq_price_policy_match` (`target_type`,`target_id`,`currency`,`status`,`priority`),
   KEY `idx_cpq_price_policy_dimension` (`dimension_key`,`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ三层价格策略';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ三层价格策略';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_price_rule` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -318,7 +318,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_price_rule` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_cpq_price_rule_code_version` (`code`,`version`),
   KEY `idx_cpq_price_rule_status_priority` (`status`,`priority`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ价格规则';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ价格规则';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_exchange_rate` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -333,7 +333,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_exchange_rate` (
   `updatetime` INT UNSIGNED NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_cpq_exchange_rate` (`source_currency`,`target_currency`,`effective_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ汇率';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ汇率';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_tax_rule` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -349,7 +349,7 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_tax_rule` (
   `updatetime` INT UNSIGNED NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_cpq_tax_rule_code_date` (`code`,`effective_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ税率规则';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ税率规则';
 
 CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_fee_rule` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -370,6 +370,6 @@ CREATE TABLE IF NOT EXISTS `__PREFIX__cpq_fee_rule` (
   `updatetime` INT UNSIGNED NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_cpq_fee_rule_code_date` (`code`,`effective_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CPQ费用规则';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CPQ费用规则';
 
 SET FOREIGN_KEY_CHECKS = 1;

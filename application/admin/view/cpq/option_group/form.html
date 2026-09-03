@@ -1,0 +1,51 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">配置组编码:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[code]" value="{$row.code|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">控件类型:</label>
+        <div class="col-xs-12 col-sm-3">{:build_select('row[input_type]', $inputTypeList, $row.input_type, ['class'=>'form-control selectpicker'])}</div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">中文名称:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[name]" value="{$row.name|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">英文名称:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[name_en]" value="{$row.name_en|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">必选:</label>
+        <div class="col-xs-12 col-sm-3">{:build_radios('row[is_required]', ['1'=>'是','0'=>'否'], $row.is_required)}</div>
+        <label class="control-label col-xs-12 col-sm-2">状态:</label>
+        <div class="col-xs-12 col-sm-3">{:build_radios('row[status]', $statusList, $row.status)}</div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">最少选择数:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" type="number" min="0" name="row[min_select]" value="{$row.min_select|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">最多选择数:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" type="number" min="0" name="row[max_select]" value="{$row.max_select|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">影响范围:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="hidden" name="row[affects_price]" value="0">
+            <label class="checkbox-inline"><input type="checkbox" name="row[affects_price]" value="1" {if $row.affects_price}checked{/if}> 价格</label>
+            <input type="hidden" name="row[affects_bom]" value="0">
+            <label class="checkbox-inline"><input type="checkbox" name="row[affects_bom]" value="1" {if $row.affects_bom}checked{/if}> BOM</label>
+            <input type="hidden" name="row[affects_lead_time]" value="0">
+            <label class="checkbox-inline"><input type="checkbox" name="row[affects_lead_time]" value="1" {if $row.affects_lead_time}checked{/if}> 交期</label>
+            <input type="hidden" name="row[affects_weight]" value="0">
+            <label class="checkbox-inline"><input type="checkbox" name="row[affects_weight]" value="1" {if $row.affects_weight}checked{/if}> 重量</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">排序:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" type="number" name="row[sort]" value="{$row.sort|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">帮助说明:</label>
+        <div class="col-xs-12 col-sm-8"><textarea class="form-control" rows="3" name="row[help_text]">{$row.help_text|htmlentities}</textarea></div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div>
+    </div>
+</form>

@@ -1,0 +1,18 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group"><label class="control-label col-xs-12 col-sm-2">产品型号:</label><div class="col-xs-12 col-sm-8"><input class="form-control selectpage" data-rule="required" data-source="cpq/product_model/index" data-field="name" name="row[model_id]" value="{$row.model_id|htmlentities}"></div></div>
+    <div class="form-group"><label class="control-label col-xs-12 col-sm-2">关联配置选项:</label><div class="col-xs-12 col-sm-8"><input class="form-control selectpage" data-source="cpq/option_value/index" data-field="name" name="row[option_value_id]" value="{$row.option_value_id|htmlentities}"><p class="help-block">留空表示型号级基础物料。</p></div></div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">物料编码:</label><div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[material_code]" value="{$row.material_code|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">替代料编码:</label><div class="col-xs-12 col-sm-3"><input class="form-control" name="row[substitute_material_code]" value="{$row.substitute_material_code|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">数量公式:</label><div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[qty_formula]" value="{$row.qty_formula|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">单位:</label><div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[unit]" value="{$row.unit|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">损耗率:</label><div class="col-xs-12 col-sm-3"><input class="form-control" type="number" min="0" max="1" step="0.000001" name="row[loss_rate]" value="{$row.loss_rate|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">版本:</label><div class="col-xs-12 col-sm-3"><input class="form-control" type="number" min="1" name="row[version]" value="{$row.version|htmlentities}"></div>
+    </div>
+    <input type="hidden" name="row[status]" value="{$row.status|htmlentities}">
+    <div class="form-group layer-footer"><label class="control-label col-xs-12 col-sm-2"></label><div class="col-xs-12 col-sm-8"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div></div>
+</form>

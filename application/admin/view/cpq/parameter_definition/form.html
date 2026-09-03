@@ -1,0 +1,24 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">参数编码:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[code]" value="{$row.code|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">参数名称:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[name]" value="{$row.name|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">值类型:</label>
+        <div class="col-xs-12 col-sm-3">{:build_select('row[value_type]', $valueTypeList, $row.value_type, ['class'=>'form-control selectpicker'])}</div>
+        <label class="control-label col-xs-12 col-sm-2">单位:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[unit]" value="{$row.unit|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">可选值 JSON:</label>
+        <div class="col-xs-12 col-sm-8"><textarea class="form-control" rows="4" name="row[option_values]" placeholder='["A","B"]'>{$row.option_values|htmlentities}</textarea></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">校验规则 JSON:</label>
+        <div class="col-xs-12 col-sm-8"><textarea class="form-control" rows="4" name="row[validation_rule]" placeholder='{"min":0,"max":100}'>{$row.validation_rule|htmlentities}</textarea></div>
+    </div>
+    <div class="form-group"><label class="control-label col-xs-12 col-sm-2">状态:</label><div class="col-xs-12 col-sm-8">{:build_radios('row[status]', $statusList, $row.status)}</div></div>
+    <div class="form-group layer-footer"><label class="control-label col-xs-12 col-sm-2"></label><div class="col-xs-12 col-sm-8"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div></div>
+</form>

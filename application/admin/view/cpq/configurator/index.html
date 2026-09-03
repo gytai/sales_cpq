@@ -1,0 +1,48 @@
+<div class="panel panel-default panel-intro">
+    {:build_heading()}
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-5">
+                <label for="cpq-model">产品型号</label>
+                <select id="cpq-model" class="form-control selectpicker" data-live-search="true">
+                    <option value="">请选择已发布型号</option>
+                    {foreach name="models" item="model"}
+                    <option value="{$model.id|htmlentities}">{$model.code|htmlentities} - {$model.name|htmlentities}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div class="col-sm-7 text-right" style="padding-top:24px">
+                <button id="cpq-load" type="button" class="btn btn-primary"><i class="fa fa-refresh"></i> 加载配置</button>
+                <button id="cpq-reset" type="button" class="btn btn-default" disabled><i class="fa fa-undo"></i> 恢复默认</button>
+                <button id="cpq-validate" type="button" class="btn btn-success" disabled><i class="fa fa-check"></i> 服务端校验</button>
+            </div>
+        </div>
+        <hr>
+        <div id="cpq-empty" class="text-muted text-center" style="padding:60px 0">请选择产品型号并加载配置结构</div>
+        <div id="cpq-workspace" class="row hidden">
+            <div class="col-md-8">
+                <h4 id="cpq-model-title"></h4>
+                <div id="cpq-groups"></div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">校验结果</div>
+                    <div class="panel-body" id="cpq-validation">尚未校验</div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">配置摘要</div>
+                    <div class="panel-body"><pre id="cpq-summary" style="white-space:pre-wrap">{}</pre></div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">模拟 BOM</div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-condensed" style="margin-bottom:0">
+                            <thead><tr><th>物料编码</th><th>数量</th><th>单位</th></tr></thead>
+                            <tbody id="cpq-bom"><tr><td colspan="3" class="text-muted">暂无数据</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

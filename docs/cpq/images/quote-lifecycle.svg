@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 560" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <defs>
+    <marker id="arrow4" viewBox="0 0 10 7" refX="9" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowGr" viewBox="0 0 10 7" refX="9" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7 Z" fill="#64748b"/>
+    </marker>
+    <marker id="arrowRd" viewBox="0 0 10 7" refX="9" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7 Z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="980" height="560" fill="#ffffff"/>
+  <text x="490" y="38" text-anchor="middle" font-size="20" font-weight="600" fill="#0f172a">报价单状态机</text>
+  <text x="490" y="60" text-anchor="middle" font-size="11" fill="#64748b">可编辑状态：草稿 / 已撤回 / 已退回　·　提交后冻结版本快照，历史版本整页只读</text>
+
+  <!-- 初始 -->
+  <circle cx="60" cy="110" r="9" fill="#0f172a"/>
+  <text x="60" y="136" text-anchor="middle" font-size="10" fill="#64748b">初始</text>
+  <line x1="69" y1="110" x2="118" y2="110" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow4)"/>
+
+  <!-- draft -->
+  <rect x="122" y="88" width="120" height="44" rx="22" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8"/>
+  <text x="182" y="115" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">草稿 draft</text>
+  <line x1="242" y1="110" x2="290" y2="110" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow4)"/>
+  <rect x="238" y="82" width="58" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="266" y="94" text-anchor="middle" font-size="10" fill="#2563eb">提交</text>
+
+  <!-- submitted -->
+  <rect x="294" y="88" width="140" height="44" rx="22" fill="#fef3c7" stroke="#d97706" stroke-width="1.8"/>
+  <text x="364" y="115" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">已提交 submitted</text>
+  <line x1="434" y1="110" x2="488" y2="110" stroke="#059669" stroke-width="2" marker-end="url(#arrow4)"/>
+  <rect x="432" y="76" width="62" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="463" y="88" text-anchor="middle" font-size="10" fill="#059669">审批通过</text>
+
+  <!-- approved -->
+  <rect x="492" y="88" width="130" height="44" rx="22" fill="#dcfce7" stroke="#059669" stroke-width="1.8"/>
+  <text x="557" y="115" text-anchor="middle" font-size="13" font-weight="600" fill="#065f46">已批准 approved</text>
+  <line x1="622" y1="110" x2="668" y2="110" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow4)"/>
+  <rect x="620" y="82" width="52" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="646" y="94" text-anchor="middle" font-size="10" fill="#2563eb">发送客户</text>
+
+  <!-- sent -->
+  <rect x="672" y="88" width="110" height="44" rx="22" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8"/>
+  <text x="727" y="115" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">已发送 sent</text>
+  <line x1="782" y1="110" x2="828" y2="110" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow4)"/>
+  <rect x="780" y="82" width="52" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="806" y="94" text-anchor="middle" font-size="10" fill="#2563eb">客户接受</text>
+
+  <!-- accepted -->
+  <circle cx="872" cy="110" r="13" fill="none" stroke="#0f172a" stroke-width="2"/>
+  <circle cx="872" cy="110" r="7" fill="#0f172a"/>
+  <rect x="820" y="132" width="104" height="20" rx="10" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="872" y="146" text-anchor="middle" font-size="11" fill="#334155">客户接受 accepted</text>
+
+  <!-- withdrawn -->
+  <rect x="122" y="240" width="130" height="44" rx="22" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="187" y="267" text-anchor="middle" font-size="12.5" font-weight="600" fill="#991b1b">已撤回 withdrawn</text>
+  <path d="M 330,132 C 300,180 260,210 240,236" fill="none" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrowRd)"/>
+  <rect x="238" y="176" width="66" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="271" y="188" text-anchor="middle" font-size="10" fill="#dc2626">发起人撤回</text>
+  <path d="M 160,240 C 140,200 150,160 168,134" fill="none" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow4)"/>
+  <rect x="90" y="176" width="76" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="128" y="188" text-anchor="middle" font-size="10" fill="#2563eb">重新编辑再提交</text>
+
+  <!-- rejected -->
+  <rect x="310" y="340" width="130" height="44" rx="22" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="375" y="367" text-anchor="middle" font-size="12.5" font-weight="600" fill="#991b1b">已驳回 rejected</text>
+  <path d="M 360,132 C 368,200 372,270 375,336" fill="none" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrowRd)"/>
+  <rect x="380" y="220" width="96" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="428" y="232" text-anchor="middle" font-size="10" fill="#dc2626">驳回（必须填意见）</text>
+
+  <!-- returned -->
+  <rect x="500" y="240" width="130" height="44" rx="22" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="565" y="267" text-anchor="middle" font-size="12.5" font-weight="600" fill="#9a3412">已退回 returned</text>
+  <path d="M 408,132 C 450,180 500,210 530,236" fill="none" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arrow4)"/>
+  <rect x="470" y="176" width="66" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="503" y="188" text-anchor="middle" font-size="10" fill="#ea580c">退回修改</text>
+  <path d="M 500,262 C 460,240 430,200 400,134" fill="none" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow4)"/>
+  <rect x="420" y="196" width="90" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="465" y="208" text-anchor="middle" font-size="10" fill="#2563eb">修改后重新提交</text>
+
+  <!-- revised -->
+  <rect x="650" y="240" width="130" height="44" rx="22" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+  <text x="715" y="267" text-anchor="middle" font-size="12.5" font-weight="600" fill="#334155">已修订 revised</text>
+  <path d="M 557,132 C 600,180 650,210 680,236" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowGr)"/>
+  <rect x="576" y="176" width="86" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="619" y="188" text-anchor="middle" font-size="10" fill="#64748b">创建修订（原单只读）</text>
+  <path d="M 715,240 C 690,160 500,120 300,110 246,108" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowGr)"/>
+  <rect x="330" y="100" width="120" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="390" y="112" text-anchor="middle" font-size="10" fill="#64748b">修订产生新草稿（版本+1）</text>
+  <text x="715" y="304" text-anchor="middle" font-size="10" fill="#64748b">已提交/已批准/已发送/</text>
+  <text x="715" y="318" text-anchor="middle" font-size="10" fill="#64748b">客户接受态均可发起修订</text>
+
+  <!-- expired / cancelled -->
+  <rect x="820" y="240" width="130" height="44" rx="22" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+  <text x="885" y="261" text-anchor="middle" font-size="12" font-weight="600" fill="#334155">已过期 expired</text>
+  <text x="885" y="277" text-anchor="middle" font-size="10" fill="#64748b">超报价有效期</text>
+  <path d="M 727,132 C 780,180 830,210 862,236" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowGr)"/>
+
+  <rect x="820" y="340" width="130" height="44" rx="22" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+  <text x="885" y="361" text-anchor="middle" font-size="12" font-weight="600" fill="#334155">已取消 cancelled</text>
+  <text x="885" y="377" text-anchor="middle" font-size="10" fill="#64748b">手动作废</text>
+  <path d="M 885,284 L 885,336" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowGr)"/>
+
+  <!-- 图例 -->
+  <rect x="40" y="420" width="900" height="120" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+  <text x="60" y="446" font-size="12" font-weight="600" fill="#334155">说明</text>
+  <text x="60" y="470" font-size="11" fill="#475569">· 提交（submit）：幂等键防重复，冻结配置/价格/条款快照，乐观锁版本 +1，随后自动创建审批实例</text>
+  <text x="60" y="492" font-size="11" fill="#475569">· 撤回（withdraw）：仅发起人可操作，待办审批任务同步取消；撤回/退回态可继续编辑后重新提交</text>
+  <text x="60" y="514" font-size="11" fill="#475569">· 修订（revision）：原报价整单置为已修订（只读），同时生成新草稿版本；同一报价版本号唯一</text>
+  <text x="60" y="536" font-size="11" fill="#475569">· 复制（copy）：任意历史报价复制为全新草稿（不继承版本历史）</text>
+</svg>

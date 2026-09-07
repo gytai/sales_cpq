@@ -5,7 +5,7 @@
 -- 与价格表/三层策略的 company、market_scope 范围维度对齐（P50 步骤一字段）。
 --
 -- 适用范围：
---   空库：install.sql 已包含本脚本结果，`php think cpq:install` 标记已执行；
+--   空库：install.sql 已包含本脚本结果，`php think install` 标记已执行；
 --   已有库：`php think cpq:upgrade` 按文件名序执行。
 --
 -- 恢复说明（回滚）：

@@ -1,7 +1,7 @@
 <?php
 
 return array (
-  'name' => 'My Website',
+  'name' => '美亚报价系统',
   'beian' => '',
   'cdnurl' => '',
   'version' => '1.0.1',

@@ -20,7 +20,7 @@ services:
       mysql:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
     volumes:
       # 代码目录挂载开发；vendor/thinkphp/runtime 由匿名卷保护，避免被空挂载覆盖
       - ./:/var/www/html
@@ -29,7 +29,16 @@ services:
       - cpq_runtime:/var/www/html/runtime
     environment:
       CPQ_DB_HOST: mysql
+      CPQ_DB_PORT: 3306
+      CPQ_DB_NAME: ${CPQ_MYSQL_DATABASE:-fastadmin}
+      CPQ_DB_USER: root
+      CPQ_DB_PASSWORD: ${CPQ_MYSQL_ROOT_PASSWORD:-root}
+      CPQ_DB_PREFIX: fa_
+      CPQ_QUEUE_CONNECTOR: Redis
       CPQ_REDIS_HOST: redis
+      CPQ_REDIS_PORT_INNER: 6379
+      CPQ_REDIS_PASSWORD: ""
+      CPQ_REDIS_DATABASE: 0
     restart: unless-stopped
 
   worker:
@@ -38,13 +47,28 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     depends_on:
-      - app
+      app:
+        condition: service_started
+      redis:
+        condition: service_healthy
     command: ["php", "think", "queue:listen", "--queue", "default", "--sleep", "1", "--tries", "3"]
     volumes:
       - ./:/var/www/html
       - /var/www/html/vendor
       - /var/www/html/thinkphp
       - cpq_runtime:/var/www/html/runtime
+    environment:
+      CPQ_DB_HOST: mysql
+      CPQ_DB_PORT: 3306
+      CPQ_DB_NAME: ${CPQ_MYSQL_DATABASE:-fastadmin}
+      CPQ_DB_USER: root
+      CPQ_DB_PASSWORD: ${CPQ_MYSQL_ROOT_PASSWORD:-root}
+      CPQ_DB_PREFIX: fa_
+      CPQ_QUEUE_CONNECTOR: Redis
+      CPQ_REDIS_HOST: redis
+      CPQ_REDIS_PORT_INNER: 6379
+      CPQ_REDIS_PASSWORD: ""
+      CPQ_REDIS_DATABASE: 0
     restart: unless-stopped
 
   mysql:
@@ -75,6 +99,11 @@ services:
       - "${CPQ_REDIS_PORT:-63791}:6379"
     volumes:
       - cpq_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
     restart: unless-stopped
 
 volumes:

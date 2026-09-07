@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 900" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <defs>
+    <marker id="arrow5" viewBox="0 0 10 7" refX="9" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowGn" viewBox="0 0 10 7" refX="9" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7 Z" fill="#059669"/>
+    </marker>
+    <marker id="arrowRr" viewBox="0 0 10 7" refX="9" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7 Z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="980" height="900" fill="#ffffff"/>
+  <text x="490" y="38" text-anchor="middle" font-size="20" font-weight="600" fill="#0f172a">审批流转全景（三条固定路径 + 六种审批动作）</text>
+
+  <!-- 提交 -->
+  <rect x="180" y="62" width="240" height="48" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.8"/>
+  <text x="300" y="83" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">报价提交（冻结版本快照）</text>
+  <text x="300" y="101" text-anchor="middle" font-size="10.5" fill="#b45309">状态 submitted · 幂等键防重复</text>
+  <line x1="300" y1="110" x2="300" y2="136" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow5)"/>
+
+  <!-- 分级判定 -->
+  <path d="M 300,140 L 400,176 L 300,212 L 200,176 Z" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8"/>
+  <text x="300" y="172" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">审批分级判定</text>
+  <text x="300" y="188" text-anchor="middle" font-size="10" fill="#3b6fd4">单价 vs 三层控制价</text>
+
+  <!-- 三条路径标签 -->
+  <line x1="200" y1="176" x2="150" y2="236" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow5)"/>
+  <rect x="128" y="204" width="72" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="164" y="216" text-anchor="middle" font-size="10" fill="#2563eb">none 免审</text>
+  <line x1="300" y1="212" x2="300" y2="236" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow5)"/>
+  <rect x="306" y="216" width="86" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="349" y="228" text-anchor="middle" font-size="10" fill="#2563eb">line 线级审批</text>
+  <line x1="400" y1="176" x2="470" y2="236" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow5)"/>
+  <rect x="404" y="196" width="100" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="454" y="208" text-anchor="middle" font-size="10" fill="#2563eb">company 公司级审批</text>
+
+  <!-- 路径1：none -->
+  <rect x="60" y="240" width="190" height="86" rx="10" fill="#f0fdf4" stroke="#059669" stroke-width="1.5"/>
+  <text x="155" y="264" text-anchor="middle" font-size="13" font-weight="600" fill="#065f46">销售确认节点</text>
+  <text x="155" y="284" text-anchor="middle" font-size="10.5" fill="#047857">固定由报价负责人处理（无需配规则）</text>
+  <text x="155" y="301" text-anchor="middle" font-size="10.5" fill="#047857">SLA 24 小时 · 动作 = 确认 confirm</text>
+  <text x="155" y="318" text-anchor="middle" font-size="10.5" fill="#047857">确认后即批准</text>
+  <path d="M 250,283 C 340,283 340,420 420,440" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrowGn)"/>
+
+  <!-- 路径2：line -->
+  <rect x="60" y="360" width="190" height="86" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="155" y="384" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">线级审批节点</text>
+  <text x="155" y="404" text-anchor="middle" font-size="10.5" fill="#3b6fd4">审批规则匹配（精确产品线优先）</text>
+  <text x="155" y="421" text-anchor="middle" font-size="10.5" fill="#3b6fd4">候选人 = 角色成员 ∪ 显式候选人</text>
+  <text x="155" y="438" text-anchor="middle" font-size="10.5" fill="#3b6fd4">或签：任一候选人处理即推进</text>
+  <path d="M 250,403 C 330,403 340,430 420,445" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrowGn)"/>
+
+  <!-- 路径3：company -->
+  <rect x="60" y="480" width="190" height="86" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="155" y="504" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">线级审批节点</text>
+  <text x="155" y="524" text-anchor="middle" font-size="10.5" fill="#3b6fd4">同上；通过后进入下一节点</text>
+  <line x1="250" y1="523" x2="330" y2="523" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow5)"/>
+  <rect x="335" y="480" width="190" height="86" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+  <text x="430" y="504" text-anchor="middle" font-size="13" font-weight="600" fill="#312e81">公司级审批节点</text>
+  <text x="430" y="524" text-anchor="middle" font-size="10.5" fill="#4338ca">审批规则匹配（company_pricer）</text>
+  <text x="430" y="541" text-anchor="middle" font-size="10.5" fill="#4338ca">候选人同口径；或签</text>
+  <path d="M 525,523 C 620,523 560,470 580,452" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrowGn)"/>
+
+  <!-- approved 汇合 -->
+  <rect x="424" y="412" width="160" height="52" rx="26" fill="#dcfce7" stroke="#059669" stroke-width="2"/>
+  <text x="504" y="434" text-anchor="middle" font-size="13" font-weight="600" fill="#065f46">已批准 approved</text>
+  <text x="504" y="452" text-anchor="middle" font-size="10.5" fill="#047857">实例 completed</text>
+
+  <!-- 驳回/退回出口 -->
+  <path d="M 250,372 C 300,340 330,330 420,320" fill="none" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrowRr)"/>
+  <rect x="424" y="296" width="160" height="40" rx="20" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="504" y="320" text-anchor="middle" font-size="12" font-weight="600" fill="#991b1b">已驳回 rejected</text>
+  <text x="260" y="336" font-size="9.5" fill="#dc2626">驳回</text>
+
+  <path d="M 250,425 C 310,415 350,405 420,382" fill="none" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arrowRr)"/>
+  <rect x="424" y="352" width="160" height="40" rx="20" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="504" y="376" text-anchor="middle" font-size="12" font-weight="600" fill="#9a3412">已退回 returned</text>
+  <text x="262" y="404" font-size="9.5" fill="#ea580c">退回</text>
+  <path d="M 504,352 C 504,180 300,120 240,86" fill="none" stroke="#2563eb" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow5)"/>
+  <rect x="300" y="132" width="120" height="16" fill="#ffffff" opacity="0.95"/>
+  <text x="360" y="144" text-anchor="middle" font-size="9.5" fill="#2563eb">修改后重新提交（新版本）</text>
+
+  <!-- ===== 右侧：审批动作面板 ===== -->
+  <rect x="620" y="62" width="340" height="504" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="640" y="90" font-size="14" font-weight="600" fill="#0f172a">审批人可执行的动作</text>
+
+  <rect x="640" y="104" width="300" height="62" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.2"/>
+  <text x="654" y="126" font-size="12" font-weight="600" fill="#065f46">✔ 通过 / 确认（approve / confirm）</text>
+  <text x="654" y="144" font-size="10.5" fill="#047857">会签任务须全部完成；节点全部通过 → 报价已批准</text>
+  <text x="654" y="160" font-size="10.5" fill="#047857">每次动作记录前后价格哈希（不可抵赖）</text>
+
+  <rect x="640" y="176" width="300" height="50" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.2"/>
+  <text x="654" y="198" font-size="12" font-weight="600" fill="#991b1b">✘ 驳回（reject）</text>
+  <text x="654" y="216" font-size="10.5" fill="#b91c1c">必须填写审批意见；流程终止，报价置为已驳回</text>
+
+  <rect x="640" y="236" width="300" height="50" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.2"/>
+  <text x="654" y="258" font-size="12" font-weight="600" fill="#9a3412">↩ 退回（return）</text>
+  <text x="654" y="276" font-size="10.5" fill="#c2410c">必须填写退回原因；报价回到可编辑态，重新提交产生新版本</text>
+
+  <rect x="640" y="296" width="300" height="50" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="654" y="318" font-size="12" font-weight="600" fill="#1e40af">→ 转交（transfer）</text>
+  <text x="654" y="336" font-size="10.5" fill="#3b6fd4">任务移交指定人员处理（必须填写转交说明）</text>
+
+  <rect x="640" y="356" width="300" height="62" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.2"/>
+  <text x="654" y="378" font-size="12" font-weight="600" fill="#312e81">✚ 加签（add_sign）</text>
+  <text x="654" y="396" font-size="10.5" fill="#4338ca">增加必办会签人：被加签人处理完毕后节点才推进</text>
+  <text x="654" y="412" font-size="10.5" fill="#4338ca">当前任务保持待处理</text>
+
+  <rect x="640" y="428" width="300" height="50" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.2"/>
+  <text x="654" y="450" font-size="12" font-weight="600" fill="#92400e">⏰ 催办（urge）</text>
+  <text x="654" y="468" font-size="10.5" fill="#b45309">提醒当前处理人尽快处理（我的待办支持批量转交）</text>
+
+  <rect x="640" y="488" width="300" height="62" rx="8" fill="#fdf2f8" stroke="#db2777" stroke-width="1.2"/>
+  <text x="654" y="510" font-size="12" font-weight="600" fill="#9d174d">👤 委托与代理（delegation）</text>
+  <text x="654" y="528" font-size="10.5" fill="#be185d">审批人设定委托区间后，代理人可见并可处理</text>
+  <text x="654" y="544" font-size="10.5" fill="#be185d">委托人的待办（动作记录委托来源）</text>
+
+  <!-- ===== 底部规则说明 ===== -->
+  <rect x="60" y="590" width="860" height="150" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+  <text x="80" y="618" font-size="13" font-weight="600" fill="#334155">硬性规则（服务层强制）</text>
+  <text x="80" y="642" font-size="11" fill="#475569">· 职责分离：报价负责人与提交人不能成为自己报价的审批人</text>
+  <text x="80" y="664" font-size="11" fill="#475569">· 候选人过滤：显式候选人 ∪ 角色成员（角色组名须与角色编码精确一致）∩ 产品线数据范围 ∩ 账号启用</text>
+  <text x="80" y="686" font-size="11" fill="#475569">· fail-closed：路径上任一节点无可用审批人时，提交直接失败回滚（不会出现无人审批的悬空单）</text>
+  <text x="80" y="708" font-size="11" fill="#475569">· 发起人撤回 / 创建修订：实例终止，全部待办任务同步取消，旧版本任务自动失效</text>
+  <text x="80" y="730" font-size="11" fill="#475569">· 审批动作与任务状态变化处于同一数据库事务；动作表只增不删，全程可审计</text>
+
+  <text x="80" y="768" font-size="11" fill="#64748b">菜单入口：审批中心 → 我的待办（催办/批量转交）· 我的待审批（处理任务）· 我发起的（查看流程/撤回）· 审批记录 · 审批规则 · 委托与代理</text>
+</svg>

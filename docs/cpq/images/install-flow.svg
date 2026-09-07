@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 860" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 7" refX="9" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7 Z" fill="#2563eb"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#94a3b8" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="960" height="860" fill="#ffffff"/>
+  <text x="480" y="42" text-anchor="middle" font-size="20" font-weight="600" fill="#0f172a">部署安装流程（从零到登录后台）</text>
+
+  <!-- 开始节点 -->
+  <rect x="200" y="70" width="360" height="56" rx="28" fill="#dcfce7" stroke="#059669" stroke-width="1.5"/>
+  <text x="380" y="94" text-anchor="middle" font-size="13" font-weight="600" fill="#065f46">开始：准备服务器环境</text>
+  <text x="380" y="112" text-anchor="middle" font-size="11" fill="#047857">PHP ≥ 7.4 · MySQL 5.7+ · Composer · Node.js/npm</text>
+  <line x1="380" y1="126" x2="380" y2="152" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 步骤1 -->
+  <rect x="170" y="156" width="420" height="60" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="380" y="181" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">① composer install</text>
+  <text x="380" y="201" text-anchor="middle" font-size="11" fill="#3b6fd4">安装 PHP 依赖（vendor/ 目录）</text>
+  <line x1="380" y1="216" x2="380" y2="242" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 步骤2 -->
+  <rect x="170" y="246" width="420" height="60" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="380" y="271" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">② npm ci</text>
+  <text x="380" y="291" text-anchor="middle" font-size="11" fill="#3b6fd4">按 package-lock.json 精确安装前端依赖（node_modules/）</text>
+  <line x1="380" y1="306" x2="380" y2="332" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 步骤3 -->
+  <rect x="170" y="336" width="420" height="60" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="380" y="361" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">③ npm run build</text>
+  <text x="380" y="381" text-anchor="middle" font-size="11" fill="#3b6fd4">grunt 拷贝依赖库到 public/assets/libs/ 并压缩打包 JS/CSS</text>
+  <line x1="380" y1="396" x2="380" y2="422" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 步骤4 -->
+  <rect x="170" y="426" width="420" height="60" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="380" y="451" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">④ 配置 .env</text>
+  <text x="380" y="471" text-anchor="middle" font-size="11" fill="#3b6fd4">复制 .env.sample 为 .env，填写数据库连接与队列配置</text>
+  <line x1="380" y1="486" x2="380" y2="512" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 步骤5 -->
+  <rect x="170" y="516" width="420" height="68" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="380" y="541" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">⑤ php think install --demo</text>
+  <text x="380" y="561" text-anchor="middle" font-size="11" fill="#3b6fd4">空库上一步建齐 72 张表：FastAdmin 基础 + 53 张 CPQ 业务表</text>
+  <text x="380" y="577" text-anchor="middle" font-size="11" fill="#3b6fd4">+ 后台菜单权限 + 演示数据（--demo 可选）</text>
+  <line x1="590" y1="550" x2="648" y2="550" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow)"/>
+  <text x="620" y="538" text-anchor="middle" font-size="11" fill="#ea580c">或 Web 向导</text>
+  <rect x="652" y="516" width="290" height="68" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="797" y="541" text-anchor="middle" font-size="13" font-weight="600" fill="#9a3412">替代：浏览器访问站点</text>
+  <text x="797" y="561" text-anchor="middle" font-size="11" fill="#c2410c">未安装时自动跳转 install.php 向导</text>
+  <text x="797" y="577" text-anchor="middle" font-size="11" fill="#c2410c">（不装演示数据）</text>
+  <line x1="380" y1="584" x2="380" y2="610" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 步骤6 -->
+  <rect x="170" y="614" width="420" height="60" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="380" y="639" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">⑥ 记录随机后台入口</text>
+  <text x="380" y="659" text-anchor="middle" font-size="11" fill="#3b6fd4">安装输出「Admin url」，如 /abc12xyz.php（随机文件名）</text>
+  <line x1="380" y1="674" x2="380" y2="700" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 结束节点 -->
+  <rect x="200" y="704" width="360" height="56" rx="28" fill="#dcfce7" stroke="#059669" stroke-width="1.5"/>
+  <text x="380" y="728" text-anchor="middle" font-size="13" font-weight="600" fill="#065f46">完成：浏览器访问随机后台入口</text>
+  <text x="380" y="746" text-anchor="middle" font-size="11" fill="#047857">登录后设置强密码，开始配置基础数据</text>
+
+  <!-- 右侧提示区 -->
+  <rect x="620" y="70" width="320" height="180" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="640" y="98" font-size="13" font-weight="600" fill="#92400e">⚠ 常见问题</text>
+  <text x="640" y="124" font-size="11" fill="#a16207">· 访问站点「反复重定向」？</text>
+  <text x="652" y="141" font-size="11" fill="#a16207">未安装状态入口跳 install.php，</text>
+  <text x="652" y="158" font-size="11" fill="#a16207">完成第 ⑤ 步安装即恢复</text>
+  <text x="640" y="182" font-size="11" fill="#a16207">· 页面 CSS/JS 大量 404？</text>
+  <text x="652" y="199" font-size="11" fill="#a16207">前端资源未构建，</text>
+  <text x="652" y="216" font-size="11" fill="#a16207">执行第 ②③ 步</text>
+  <text x="640" y="240" font-size="11" fill="#a16207">· 重装需清空数据库并加 --force</text>
+
+  <rect x="620" y="270" width="320" height="120" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.5"/>
+  <text x="640" y="298" font-size="13" font-weight="600" fill="#065f46">🐳 Docker 环境捷径</text>
+  <text x="640" y="324" font-size="11" fill="#047857">docker compose up -d 后执行：</text>
+  <text x="640" y="344" font-size="11" fill="#047857" font-family="Menlo, monospace">docker/init.sh</text>
+  <text x="640" y="364" font-size="11" fill="#047857">一键完成 .env → 安装 → 演示数据 → 测试</text>
+
+  <rect x="620" y="410" width="320" height="90" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+  <text x="640" y="438" font-size="13" font-weight="600" fill="#334155">📦 安装内容一览</text>
+  <text x="640" y="462" font-size="11" fill="#475569">72 张表：19 FastAdmin 基础 + 53 CPQ 业务</text>
+  <text x="640" y="482" font-size="11" fill="#475569">136 条初始数据 + CPQ 后台菜单权限规则</text>
+
+  <!-- 图例 -->
+  <rect x="620" y="620" width="320" height="140" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="640" y="648" font-size="12" font-weight="600" fill="#334155">图例</text>
+  <line x1="640" y1="668" x2="690" y2="668" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="700" y="672" font-size="11" fill="#475569">主流程（命令行）</text>
+  <line x1="640" y1="696" x2="690" y2="696" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow)"/>
+  <text x="700" y="700" font-size="11" fill="#475569">替代路径</text>
+  <rect x="640" y="716" width="16" height="12" rx="3" fill="#dcfce7" stroke="#059669"/>
+  <text x="700" y="727" font-size="11" fill="#475569">起止 / 完成</text>
+</svg>

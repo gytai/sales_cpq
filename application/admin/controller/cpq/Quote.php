@@ -178,6 +178,7 @@ class Quote extends Backend
         $this->view->assign('quoteJson', $this->safeJson($detail ?: new \stdClass()));
         $this->view->assign('row', $detail ?: []);
         $this->view->assign('productLineList', $this->productLineOptions());
+        $this->view->assign('companyList', $this->companyOptions($detail ? (string)($detail['company'] ?? '') : ''));
         return $this->view->fetch();
     }
 
@@ -413,6 +414,26 @@ class Quote extends Backend
         return array_values(array_filter(array_map('strval', $lines), function ($line) {
             return $line !== '';
         }));
+    }
+
+    /**
+     * 我方公司下拉选项：取已发布价格表的 company 去重，保证所选公司必然能
+     * 命中价格表（与 PricingService::scopeMatches 的 company 维度对齐）。
+     * 若当前报价的 company 不在价格表列表中（历史遗留不一致），保留该值供人工纠正。
+     */
+    private function companyOptions($current = '')
+    {
+        $companies = Db::name('cpq_price_book')
+            ->where('status', 'published')
+            ->group('company')
+            ->column('company');
+        $companies = array_values(array_filter(array_map('strval', $companies), function ($company) {
+            return $company !== '';
+        }));
+        if ($current !== '' && !in_array($current, $companies, true)) {
+            $companies[] = $current;
+        }
+        return $companies;
     }
 
     // ------------------------------------------------------------------

@@ -18,7 +18,7 @@ cp docker/compose.env.example .env.docker   # .env.docker 已 gitignore，可放
 # 2. 构建并启动
 docker compose --env-file .env.docker up -d --build
 
-# 3. 一键初始化：写应用 .env → 等待 MySQL → php think install → cpq:install --demo → 跑测试
+# 3. 一键初始化：写应用 .env → 等待 MySQL → php think install --demo（FastAdmin + CPQ 一步装齐）→ 跑测试
 docker compose --env-file .env.docker exec app bash docker/init.sh
 
 # 4. 访问
@@ -50,7 +50,7 @@ docker compose --env-file .env.docker down -v && docker compose --env-file .env.
 docker compose --env-file .env.docker exec app bash docker/init.sh   # 应完整走一遍安装+测试
 ```
 
-升级 SQL 验证：在已初始化环境执行 `docker compose exec app php think cpq:install`，应幂等通过、不重复造数据。
+升级 SQL 验证：在已初始化环境执行 `docker compose exec app php think cpq:upgrade`，应幂等通过、不重复造数据。
 
 ## 目录说明
 

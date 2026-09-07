@@ -17,7 +17,7 @@ return [
     'app\admin\command\Min',
     'app\admin\command\Addon',
     'app\admin\command\Api',
-    'app\admin\command\CpqInstall',
+    'app\admin\command\CpqMenu',
     'app\admin\command\CpqUpgrade',
     'app\admin\command\CpqSchedule',
 ];

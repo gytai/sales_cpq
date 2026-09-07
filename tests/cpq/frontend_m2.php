@@ -33,8 +33,10 @@ foreach ($pages as $page) {
 $pricingJs = file_get_contents($root . '/public/assets/js/backend/cpq/pricing.js');
 $policyJs = file_get_contents($root . '/public/assets/js/backend/cpq/price_policy.js');
 $policyForm = file_get_contents($root . '/application/admin/view/cpq/price_policy/form.html');
+$priceEntryForm = file_get_contents($root . '/application/admin/view/cpq/price_entry/form.html');
 $pricingController = file_get_contents($root . '/application/admin/controller/cpq/Pricing.php');
 $policyController = file_get_contents($root . '/application/admin/controller/cpq/PricePolicy.php');
+$priceEntryController = file_get_contents($root . '/application/admin/controller/cpq/PriceEntry.php');
 
 checkM2(strpos($pricingJs, "Fast.api.ajax({url:'cpq/pricing/' + action") !== false, '模拟器未接后台定价接口');
 checkM2(strpos($pricingJs, 'price_trace.steps') !== false, '模拟器未渲染规则命中顺序');
@@ -46,5 +48,9 @@ checkM2(strpos($pricingController, 'maskForRoles') !== false, '模拟器响应�
 checkM2(strpos($policyController, 'maskRows') !== false, '价格矩阵列表未调用字段级脱敏');
 checkM2(strpos($pricingController, 'SensitiveFieldService::rolesOfAdmin') !== false, '模拟器未从服务端会话解析角色');
 checkM2(strpos($pricingJs, 'JSON.stringify(lastSafeResult') !== false, '安全轨迹导出未使用脱敏响应缓存');
+checkM2(strpos($priceEntryController, "post('q_word/a', [])") !== false, '定价对象下拉未按数组读取 selectpage 搜索词');
+checkM2(substr_count($priceEntryController, '$applyFilter(Db::name($table))') === 2, '定价对象下拉的计数和列表未使用相同筛选条件');
+checkM2(strpos($priceEntryForm, 'cpq/price_entry/selectbook') !== false, '价格条目表单未使用可维护价格表数据源');
+checkM2(strpos($priceEntryController, "where('status', 'in', ['draft', 'pending'])") !== false, '价格表下拉未排除已发布和已失效版本');
 
 echo 'M2 frontend contract tests: PASS (' . $assertions . " assertions)\n";

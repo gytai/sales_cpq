@@ -66,7 +66,15 @@
                     <div class="col-sm-4"><div class="form-group"><label>销售组织</label><input class="form-control selectpage" data-source="cpq/sales_org/index" data-field="name" name="sales_org_id" value="{$row.sales_org_id|default=''|htmlentities}"></div></div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-4"><div class="form-group"><label>我方公司</label><input class="form-control" name="company" maxlength="120" placeholder="匹配公司级价格表/策略，如 DEMO公司" value="{$row.company|default=''|htmlentities}"></div></div>
+                    <div class="col-sm-4"><div class="form-group"><label>我方公司</label>
+                        {php}$quoteCompany = isset($row['company']) ? $row['company'] : '';{/php}
+                        <select class="form-control selectpicker" name="company" data-live-search="true" title="匹配公司级价格表/策略">
+                            <option value="">请选择我方公司</option>
+                            {foreach name="companyList" item="company"}
+                            <option value="{$company|htmlentities}" {if $quoteCompany == $company}selected{/if}>{$company|htmlentities}</option>
+                            {/foreach}
+                        </select>
+                    </div></div>
                     <div class="col-sm-4"><div class="form-group"><label>市场范围</label>
                         {php}$quoteMarketScope = isset($row['market_scope']) ? $row['market_scope'] : '';{/php}
                         <select class="form-control selectpicker" name="market_scope">

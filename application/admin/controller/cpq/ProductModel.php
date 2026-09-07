@@ -6,6 +6,7 @@ use app\admin\library\traits\CpqRelationIndex;
 use app\admin\library\traits\CpqVersioned;
 use app\admin\model\cpq\ProductModel as ProductModelEntity;
 use app\common\controller\Backend;
+use app\common\library\cpq\ProductCategory;
 
 /**
  * 产品型号
@@ -36,6 +37,7 @@ class ProductModel extends Backend
         parent::_initialize();
         $this->model = new ProductModelEntity();
         $this->view->assign('statusList', $this->model->getStatusList());
+        $this->view->assign('categoryCodeList', ['' => '未分类'] + ProductCategory::list());
         $this->assignconfig('statusList', $this->model->getStatusList());
     }
 }

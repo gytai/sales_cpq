@@ -375,6 +375,12 @@ check($coverage['total'] === 2 && $coverage['covered'] === 1, '在售型号价�
 $missingCodes = array_column($coverage['missing'], 'code');
 check(in_array('CPQ-TEST-MODEL-B', $missingCodes, true), '覆盖缺口列出具缺失型号');
 
+$bookA2Data = $lifecycle->copyNewVersion(PriceBook::get($bookA));
+$bookA2 = (int)$bookA2Data['id'];
+$copiedEntry = Db::name('cpq_price_entry')->where('price_book_id', $bookA2)->find();
+check($bookA2Data['status'] === 'draft' && (int)$bookA2Data['version'] === 2, '价格表复制生成下一版本草稿');
+check($copiedEntry && (int)$copiedEntry['target_id'] === $modelA && $copiedEntry['amount'] === '120000.0000', '价格表复制时继承原版本价格条目');
+
 // 发布版本：不可变 / 撤回 / 回滚
 $bookRow = Db::name('cpq_price_book')->where('id', $bookPendingOk)->find();
 $release1 = $releaseService->recordRelease('cpq_price_book', $bookRow, '首次发布');

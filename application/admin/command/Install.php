@@ -2,6 +2,8 @@
 
 namespace app\admin\command;
 
+use app\common\service\cpq\MenuRuleService;
+use app\common\service\cpq\SchemaUpgradeService;
 use fast\Random;
 use PDO;
 use think\Config;
@@ -47,7 +49,8 @@ class Install extends Command
             ->addOption('username', 'u', Option::VALUE_OPTIONAL, 'mysql username', $config['username'])
             ->addOption('password', 'p', Option::VALUE_OPTIONAL, 'mysql password', $config['password'])
             ->addOption('force', 'f', Option::VALUE_OPTIONAL, 'force override', false)
-            ->setDescription('New installation of FastAdmin');
+            ->addOption('demo', null, Option::VALUE_NONE, 'Install CPQ demo data')
+            ->setDescription('Install FastAdmin with CPQ tables and data');
     }
 
     /**
@@ -75,7 +78,7 @@ class Install extends Command
         $adminEmail = 'admin@admin.com';
         $siteName = __('My Website');
 
-        $adminName = $this->installation($hostname, $hostport, $database, $username, $password, $prefix, $adminUsername, $adminPassword, $adminEmail, $siteName);
+        $adminName = $this->installation($hostname, $hostport, $database, $username, $password, $prefix, $adminUsername, $adminPassword, $adminEmail, $siteName, $input->getOption('demo'));
         if ($adminName) {
             $output->highlight("Admin url:https://www.example.com/{$adminName}");
         }
@@ -159,7 +162,7 @@ class Install extends Command
     /**
      * 执行安装
      */
-    protected function installation($mysqlHostname, $mysqlHostport, $mysqlDatabase, $mysqlUsername, $mysqlPassword, $mysqlPrefix, $adminUsername, $adminPassword, $adminEmail = null, $siteName = null)
+    protected function installation($mysqlHostname, $mysqlHostport, $mysqlDatabase, $mysqlUsername, $mysqlPassword, $mysqlPrefix, $adminUsername, $adminPassword, $adminEmail = null, $siteName = null, $withDemo = false)
     {
         $this->checkenv();
 
@@ -180,9 +183,20 @@ class Install extends Command
             throw new Exception(__('Please input correct website'));
         }
 
-        $sql = file_get_contents(INSTALL_PATH . 'fastadmin.sql');
+        // 全量安装基线：FastAdmin 基础表与初始数据 + CPQ 业务表（__PREFIX__ 占位）
+        if (!preg_match('/^[a-zA-Z0-9_]*$/', $mysqlPrefix)) {
+            throw new Exception(__('Please input correct prefix'));
+        }
+        $installSqlFile = ROOT_PATH . 'database' . DS . 'cpq' . DS . 'install.sql';
+        if (!is_file($installSqlFile)) {
+            throw new Exception('CPQ install sql not found: ' . $installSqlFile);
+        }
+        $sql = file_get_contents($installSqlFile);
+        if ($sql === false || trim($sql) === '') {
+            throw new Exception('CPQ install sql is empty');
+        }
 
-        $sql = str_replace("`fa_", "`{$mysqlPrefix}", $sql);
+        $sql = str_replace('__PREFIX__', $mysqlPrefix, $sql);
 
         // 先尝试能否自动创建数据库
         $config = Config::get('database');
@@ -207,6 +221,24 @@ class Install extends Command
 
             // 调用原生PDO对象进行批量查询
             $instance->getPdo()->exec($sql);
+
+            // CPQ 后台菜单与权限规则（auth_rule 已由合并基线建出）
+            (new MenuRuleService($instance))->install();
+
+            // 全新安装即含最终结构：把 database/cpq/upgrades/ 增量脚本标记为已执行
+            (new SchemaUpgradeService(null, $mysqlPrefix))->markAllApplied($instance->getPdo());
+
+            if ($withDemo) {
+                $demoSqlFile = ROOT_PATH . 'database' . DS . 'cpq' . DS . 'demo.sql';
+                if (!is_file($demoSqlFile)) {
+                    throw new Exception('CPQ demo sql not found');
+                }
+                $demoSql = file_get_contents($demoSqlFile);
+                if ($demoSql === false || trim($demoSql) === '') {
+                    throw new Exception('CPQ demo sql is empty');
+                }
+                $instance->getPdo()->exec(str_replace('__PREFIX__', $mysqlPrefix, $demoSql));
+            }
         } catch (\PDOException $e) {
             throw new Exception($e->getMessage());
         }
@@ -224,12 +256,28 @@ class Install extends Command
 
         $envText = @file_get_contents($envFile);
 
-        $callback = function ($matches) use ($mysqlHostname, $mysqlHostport, $mysqlUsername, $mysqlPassword, $mysqlDatabase, $mysqlPrefix) {
-            $field = "mysql" . ucfirst($matches[1]);
-            $replace = $$field;
-            return "{$matches[1]} = {$replace}";
-        };
-        $envText = preg_replace_callback("/(hostname|database|username|password|hostport|prefix)\s*=\s*(.*)/", $callback, $envText);
+        // 仅在 [database] 节内改写连接键，避免误伤 [queue]/[cpq] 等节的同名键
+        $databaseEnvMap = [
+            'hostname' => $mysqlHostname,
+            'database' => $mysqlDatabase,
+            'username' => $mysqlUsername,
+            'password' => $mysqlPassword,
+            'hostport' => $mysqlHostport,
+            'prefix'   => $mysqlPrefix,
+        ];
+        $envLines = preg_split('/\r?\n/', $envText);
+        $section = '';
+        foreach ($envLines as &$line) {
+            if (preg_match('/^\s*\[([^\]]+)\]\s*$/', $line, $matches)) {
+                $section = strtolower(trim($matches[1]));
+                continue;
+            }
+            if ($section === 'database' && preg_match('/^(hostname|database|username|password|hostport|prefix)\s*=/', $line, $matches)) {
+                $line = $matches[1] . ' = ' . $databaseEnvMap[$matches[1]];
+            }
+        }
+        unset($line);
+        $envText = implode("\n", $envLines);
 
         // 检测能否成功写入数据库配置
         $result = @file_put_contents($envFile, $envText);

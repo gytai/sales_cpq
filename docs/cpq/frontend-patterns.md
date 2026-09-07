@@ -12,7 +12,7 @@
 | 视图 | `application/admin/view/cpq/product_series/{index,add,edit,form}.html` | `add.html`/`edit.html` 仅 `{include file="cpq/product_series/form" /}`，表单集中在 `form.html` |
 | 页面脚本 | `public/assets/js/backend/cpq/product_series.js` | RequireJS `define([...], function (...) { ... return Controller; })`，按 `index/add/edit` 动作导出 |
 | 共享组件 | `public/assets/js/backend/cpq/common.js` | 跨页面复用的徽标、按钮、格式化函数统一放这里 |
-| 菜单/权限 | `application/admin/command/CpqInstall.php` | `php think cpq:install` 幂等写入 `fa_auth_rule`，新增页面在此登记菜单与操作节点 |
+| 菜单/权限 | `application/common/service/cpq/MenuRuleService.php` | `php think install` 安装时写入、`php think cpq:menu` 幂等补同步 `fa_auth_rule`，新增页面在此登记菜单与操作节点 |
 
 URL、视图目录、JS 文件名三段保持同一蛇形命名（`cpq/product_series` ↔ `view/cpq/product_series/` ↔ `backend/cpq/product_series.js`）。
 
@@ -118,11 +118,10 @@ Table.api.init({extend: {
 
 ```bash
 # 1. 依赖：worktree 需有 thinkphp/ 与 vendor/（composer install 或软链主检出）
-# 2. 安装 FastAdmin（会随机生成后台入口文件名与管理员密码，注意记录输出）
-php think install -a localhost -o 13306 -d fastadmin_cpq_poc -r fa_ -u root -p root -f true
-# 3. 安装 CPQ 表、菜单权限与演示数据
-php think cpq:install --demo
-# 4. 启动服务
+# 2. 空库一步安装：FastAdmin + CPQ 表、菜单权限与演示数据
+#    （会随机生成后台入口文件名与管理员密码，注意记录输出）
+php think install -a localhost -o 13306 -d fastadmin_cpq_poc -r fa_ -u root -p root -f true --demo
+# 3. 启动服务
 php -S 127.0.0.1:8899 -t public public/router.php
 ```
 

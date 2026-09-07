@@ -13,7 +13,7 @@ use think\Db;
  * CPQ 增量升级命令：按 database/cpq/upgrades/ 文件名序应用未执行的脚本。
  *
  * - 已有库升级：php think cpq:upgrade（执行前请备份数据库）；
- * - 空库安装请使用 php think cpq:install，它会建最终结构并标记脚本已执行；
+ * - 空库安装请使用 php think install [--demo]，它会建最终结构并标记脚本已执行；
  * - 复跑幂等：已执行的脚本不会重复执行。
  */
 class CpqUpgrade extends Command

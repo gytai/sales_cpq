@@ -34,7 +34,7 @@ $wizardJs = file_get_contents($root . '/public/assets/js/backend/cpq/quote_wizar
 $wizardView = file_get_contents($root . '/application/admin/view/cpq/quote/wizard.html');
 $indexView = file_get_contents($root . '/application/admin/view/cpq/quote/index.html');
 $detailView = file_get_contents($root . '/application/admin/view/cpq/quote/detail.html');
-$install = file_get_contents($root . '/application/admin/command/CpqInstall.php');
+$install = file_get_contents($root . '/application/common/service/cpq/MenuRuleService.php');
 
 // 2. 金额不经过 JS 浮点运算（最终金额只展示服务端 Decimal 字符串）
 checkQuoteFrontend(!preg_match('/\b(parseFloat|toFixed|Math\.round|Number)\s*\(/', $quoteJs . $wizardJs), '报价页面出现 JS 浮点计算');
@@ -90,9 +90,9 @@ checkQuoteFrontend(strpos($detailView, 'cpq-detail-revisions') !== false, '详�
 checkQuoteFrontend(strpos($quoteJs, 'cpq/quote/diffdata') !== false, '差异页未接后端差异接口');
 
 // 9. 菜单权限节点
-checkQuoteFrontend(strpos($install, "'cpq/quote'") !== false, 'CpqInstall 未注册报价菜单');
+checkQuoteFrontend(strpos($install, "'cpq/quote'") !== false, 'MenuRuleService 未注册报价菜单');
 foreach (['wizard', 'save', 'recalculate', 'submit', 'withdraw', 'copy', 'revision', 'diffdata'] as $action) {
-    checkQuoteFrontend(strpos($install, "'" . $action . "' =>") !== false, 'CpqInstall 缺少 cpq/quote/' . $action . ' 节点');
+    checkQuoteFrontend(strpos($install, "'" . $action . "' =>") !== false, 'MenuRuleService 缺少 cpq/quote/' . $action . ' 节点');
 }
 
 echo 'M2 quote frontend contract tests: PASS (' . $assertions . " assertions)\n";

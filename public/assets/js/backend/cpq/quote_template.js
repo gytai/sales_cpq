@@ -201,7 +201,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                                 name: 'publish', text: '发布', icon: 'fa fa-check',
                                 classname: 'btn btn-xs btn-primary btn-cpq-publish',
                                 visible: function (row) {
-                                    return auth.publish && row.status === 'draft';
+                                    return auth.publish && (row.status === 'draft' || row.status === 'disabled');
                                 }
                             },
                             {

@@ -27,3 +27,5 @@ node_modules
 !/public/admin.php
 !/public/install.php
 !/public/router.php
+.github/*
+/tmp/*

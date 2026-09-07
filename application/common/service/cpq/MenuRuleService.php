@@ -1,109 +1,28 @@
 <?php
 
-namespace app\admin\command;
+namespace app\common\service\cpq;
 
-use app\common\service\cpq\SchemaUpgradeService;
-use think\Config;
 use think\Cache;
-use think\console\Command;
-use think\console\Input;
-use think\console\input\Option;
-use think\console\Output;
 use think\Db;
-use think\Exception;
+use think\db\Connection;
 
-class CpqInstall extends Command
+/**
+ * CPQ 后台菜单与权限规则安装（幂等 upsert）。
+ *
+ * 由 install 命令（全新安装）与 cpq:menu 命令（已有环境同步菜单）共用；
+ * 连接可注入：CLI 安装流程中默认连接仍指向旧配置时，必须传入显式连接。
+ */
+class MenuRuleService
 {
-    protected function configure()
+    /** @var Connection */
+    private $connection;
+
+    public function __construct(Connection $connection = null)
     {
-        $this
-            ->setName('cpq:install')
-            ->addOption('demo', null, Option::VALUE_NONE, 'Install CPQ demo data')
-            ->setDescription('Install CPQ database tables');
+        $this->connection = $connection ?: Db::connect();
     }
 
-    protected function execute(Input $input, Output $output)
-    {
-        $installFile = ROOT_PATH . 'database' . DS . 'cpq' . DS . 'install.sql';
-        if (!is_file($installFile)) {
-            throw new Exception('CPQ 安装脚本不存在');
-        }
-
-        $sql = file_get_contents($installFile);
-        if ($sql === false || trim($sql) === '') {
-            throw new Exception('CPQ 安装脚本为空');
-        }
-
-        $prefix = (string)Config::get('database.prefix');
-        if (!preg_match('/^[a-zA-Z0-9_]*$/', $prefix)) {
-            throw new Exception('数据库表前缀不合法');
-        }
-
-        $connection = Db::connect();
-        $connection->execute('SELECT 1');
-        // 全新建库判定：安装前不存在任何 CPQ 表 → install.sql 建最终结构，
-        // 可把现有升级脚本标记为已执行；已有库不得标记，改用 cpq:upgrade。
-        $isFreshInstall = $this->cpqTablesAbsent($connection, $prefix);
-
-        $sql = str_replace('__PREFIX__', $prefix, $sql);
-        $pdo = $connection->getPdo();
-        $pdo->exec($sql);
-        if ($this->tableExists($connection, $prefix . 'auth_rule')) {
-            $this->installMenuRules();
-        } else {
-            $output->warning('auth_rule table not found; skip admin menu rules installation.');
-        }
-
-        if ($isFreshInstall) {
-            (new SchemaUpgradeService(null, $prefix))->markAllApplied($pdo);
-            $output->info('CPQ upgrade scripts marked as applied (fresh install).');
-        } else {
-            $output->warning('Existing CPQ tables detected; run `php think cpq:upgrade` to apply pending upgrades.');
-        }
-        $output->info('CPQ database tables installed successfully.');
-
-        if ($input->getOption('demo')) {
-            $demoFile = ROOT_PATH . 'database' . DS . 'cpq' . DS . 'demo.sql';
-            if (!is_file($demoFile)) {
-                throw new Exception('CPQ 演示数据脚本不存在');
-            }
-            $demoSql = file_get_contents($demoFile);
-            if ($demoSql === false || trim($demoSql) === '') {
-                throw new Exception('CPQ 演示数据脚本为空');
-            }
-            $demoSql = str_replace('__PREFIX__', $prefix, $demoSql);
-            $pdo->exec($demoSql);
-            $output->info('CPQ demo data installed successfully.');
-        }
-    }
-
-    /**
-     * 判定安装前是否不存在任何 CPQ 表。
-     *
-     * @param \think\db\Connection $connection
-     * @param string               $prefix
-     * @return bool
-     */
-    private function cpqTablesAbsent($connection, $prefix)
-    {
-        $tables = $connection->query("SHOW TABLES LIKE '{$prefix}cpq_%'");
-        return empty($tables);
-    }
-
-    /**
-     * 判定指定物理表是否存在（空库安装时无 FastAdmin 后台表，跳过菜单规则）。
-     *
-     * @param \think\db\Connection $connection
-     * @param string               $table 物理表名（含前缀）
-     * @return bool
-     */
-    private function tableExists($connection, $table)
-    {
-        $tables = $connection->query("SHOW TABLES LIKE '{$table}'");
-        return !empty($tables);
-    }
-
-    private function installMenuRules()
+    public function install()
     {
         $now = time();
         $rootId = $this->upsertMenuRule([
@@ -467,7 +386,7 @@ class CpqInstall extends Command
             }
         }
 
-        Db::name('auth_rule')->where('name', 'in', [
+        $this->connection->name('auth_rule')->where('name', 'in', [
             'cpq/configurator/add',
             'cpq/configurator/edit',
             'cpq/configurator/del',
@@ -478,7 +397,7 @@ class CpqInstall extends Command
 
     private function upsertMenuRule(array $rule, $now)
     {
-        $existing = Db::name('auth_rule')->where('name', $rule['name'])->find();
+        $existing = $this->connection->name('auth_rule')->where('name', $rule['name'])->find();
         $values = array_merge([
             'type' => 'file',
             'pid' => 0,
@@ -498,10 +417,10 @@ class CpqInstall extends Command
         ], $rule);
 
         if ($existing) {
-            Db::name('auth_rule')->where('id', $existing['id'])->update($values);
+            $this->connection->name('auth_rule')->where('id', $existing['id'])->update($values);
             return (int)$existing['id'];
         }
         $values['createtime'] = $now;
-        return (int)Db::name('auth_rule')->insertGetId($values);
+        return (int)$this->connection->name('auth_rule')->insertGetId($values);
     }
 }

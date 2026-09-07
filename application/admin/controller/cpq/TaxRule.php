@@ -5,6 +5,7 @@ namespace app\admin\controller\cpq;
 use app\admin\library\traits\CpqRelationIndex;
 use app\admin\model\cpq\TaxRule as TaxRuleModel;
 use app\common\controller\Backend;
+use app\common\library\cpq\ProductCategory;
 use app\common\service\cpq\ImportPreviewService;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -34,6 +35,7 @@ class TaxRule extends Backend
         parent::_initialize();
         $this->model = new TaxRuleModel();
         $this->view->assign('statusList', $this->model->getStatusList());
+        $this->view->assign('productTypeList', ['' => '不限'] + ProductCategory::list());
         $this->assignconfig('statusList', $this->model->getStatusList());
     }
 

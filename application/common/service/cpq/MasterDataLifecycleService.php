@@ -245,18 +245,21 @@ class MasterDataLifecycleService
         Db::startTrans();
         try {
             $newId = Db::name($table)->insertGetId($data);
+            $copyDetail = [
+                'source_id' => (int)$row[$pk],
+                'source_version' => (int)($row['version'] ?? 1),
+                'new_version' => $newVersion,
+            ];
             if ($table === 'cpq_product_model') {
                 $this->duplicateModelChildren((int)$row[$pk], $newId);
+            } elseif ($table === 'cpq_price_book') {
+                $copyDetail['copied_price_entries'] = $this->duplicatePriceBookEntries((int)$row[$pk], $newId);
             }
             $this->audit->record(
                 AuditLogService::ACTION_COPY,
                 $table,
                 $newId,
-                [
-                    'source_id' => (int)$row[$pk],
-                    'source_version' => (int)($row['version'] ?? 1),
-                    'new_version' => $newVersion,
-                ],
+                $copyDetail,
                 $code
             );
             Db::commit();
@@ -787,6 +790,28 @@ class MasterDataLifecycleService
             $structure['updatetime'] = $now;
             Db::name('cpq_model_option_group')->insert($structure);
         }
+    }
+
+    /**
+     * 复制价格表时继承全部价格条目，后续只需在新草稿上维护差异。
+     *
+     * @param int $sourcePriceBookId
+     * @param int $targetPriceBookId
+     * @return int
+     */
+    private function duplicatePriceBookEntries($sourcePriceBookId, $targetPriceBookId)
+    {
+        $now = time();
+        $entries = Db::name('cpq_price_entry')->where('price_book_id', $sourcePriceBookId)->select();
+        foreach ($entries as &$entry) {
+            unset($entry['id']);
+            $entry['price_book_id'] = $targetPriceBookId;
+            $entry['createtime'] = $now;
+            $entry['updatetime'] = $now;
+        }
+        unset($entry);
+
+        return empty($entries) ? 0 : (int)Db::name('cpq_price_entry')->insertAll($entries);
     }
 
     // ------------------------------------------------------------------

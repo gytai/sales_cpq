@@ -146,6 +146,8 @@ class QuoteTemplateService
     {
         $content = $this->decodeContent($template);
         $isEn = $language === 'en';
+        // 中文 PDF 必须显式使用 createMpdf() 注册的字体；sans-serif 会被 mPDF 映射为 DejaVu，缺少中文字形。
+        $bodyFontFamily = $isEn ? 'sans-serif' : 'wqyzh, sans-serif';
         $label = function ($zh, $en) use ($isEn) {
             return $isEn ? $en : $zh;
         };
@@ -160,7 +162,7 @@ class QuoteTemplateService
         };
 
         $html = '<html><head><meta charset="utf-8"><style>'
-            . 'body{font-family:sans-serif;font-size:12px;color:#222;margin:24px}'
+            . 'body{font-family:' . $bodyFontFamily . ';font-size:12px;color:#222;margin:24px}'
             . 'h1{font-size:22px;margin:0 0 4px}h2{font-size:15px;border-bottom:2px solid #2a6496;padding-bottom:4px;margin:18px 0 8px;color:#2a6496}'
             . 'table{width:100%;border-collapse:collapse;margin:6px 0}th,td{border:1px solid #bbb;padding:5px 7px;text-align:left}'
             . 'th{background:#eef3f8}.total{font-size:15px;font-weight:bold}.muted{color:#777}'

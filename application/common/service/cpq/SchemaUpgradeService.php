@@ -16,7 +16,7 @@ use think\Config;
  *  - 执行记录写入 {prefix}cpq_migration，cpq:upgrade 只应用未执行的脚本。
  *
  * 本类直接持有 PDO 连接，命令行与升级测试可共用同一逻辑；
- * 空库安装（cpq:install）在全新建库后把现有脚本标记为已执行，
+ * 空库安装（php think install）在全新建库后把现有脚本标记为已执行，
  * 因为 install.sql 始终携带最终结构。
  */
 class SchemaUpgradeService

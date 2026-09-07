@@ -81,9 +81,9 @@
 
 ## 3. 安装与升级约定（M0 固化）
 
-- `database/cpq/install.sql`：首次安装，全部 `CREATE TABLE IF NOT EXISTS`，占位符 `__PREFIX__`；
+- `database/cpq/install.sql`：全量安装基线，一步建齐 FastAdmin 基础表（含初始数据）与 CPQ 业务表，占位符 `__PREFIX__`；基线为裸 `CREATE TABLE`（非幂等），仅限空库执行；
 - `database/cpq/upgrades/`：按版本递增的增量 SQL（`YYYYMMDDXX_说明.sql`），只增不改历史文件；
 - `database/cpq/demo.sql`：仅脱敏演示数据（`CPQ-DEMO` 前缀）；
-- 安装命令：`php think cpq:install [--demo]`（同时写入后台菜单权限规则）；
+- 安装命令：`php think install [--demo]`（同时写入后台菜单权限规则并标记增量脚本已执行；菜单单独补同步用 `php think cpq:menu`）；
 - 空库验证流程见 `docker/README.md` 与 `docs/cpq/m0-poc.md`；
-- 禁止直接修改 `application/admin/command/Install/fastadmin.sql`。
+- 禁止直接修改 `application/admin/command/Install/fastadmin.sql`（该文件自 2026-09 合并基线起不再被安装流程引用，仅作历史保留）。

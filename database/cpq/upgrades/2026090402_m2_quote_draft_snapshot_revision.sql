@@ -9,7 +9,7 @@
 --
 -- 适用范围：
 --   空库：先执行 install.sql（已包含本脚本全部结果），再由
---         `php think cpq:install` 将本脚本标记为已执行；
+--         `php think install` 将本脚本标记为已执行；
 --   已有库：`php think cpq:upgrade` 按文件名序执行未应用的脚本。
 --
 -- 恢复说明（回滚）：

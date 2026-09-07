@@ -42,7 +42,7 @@ foreach ($pages as $page => $views) {
     checkM3(is_file($root . '/public/assets/js/backend/cpq/' . $page . '.js'), '缺少页面脚本 ' . $page . '.js');
 }
 
-$install = file_get_contents($root . '/application/admin/command/CpqInstall.php');
+$install = file_get_contents($root . '/application/common/service/cpq/MenuRuleService.php');
 $demo = file_get_contents($root . '/database/cpq/demo.sql');
 $jsAll = '';
 foreach (array_keys($pages) as $page) {

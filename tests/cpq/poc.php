@@ -70,12 +70,16 @@ pocRun('PDF/mpdf 生成中文报价单', function () {
         'tempDir'      => $tmpDir,
         'fontDir'      => array_merge($defaultConfig['fontDir'], [$font['dir']]),
         'fontdata'     => $defaultFontConfig['fontdata'] + [
-            $font['name'] => ['R' => $font['file'], 'TTCfontID' => ['R' => 0]],
+            $font['name'] => [
+                'R' => $font['file'],
+                'B' => $font['file'],
+                'TTCfontID' => ['R' => 0, 'B' => 0],
+            ],
         ],
         'default_font' => $font['name'],
     ]);
     $mpdf->SetTitle('CPQ PoC 报价单');
-    $mpdf->WriteHTML('<h1>报价单 Quotation</h1><p>型号：CPQ-DEMO-EQUIPMENT-A；数量：2；金额：¥12,345.67</p>');
+    $mpdf->WriteHTML('<style>body{font-family:wqyzh,sans-serif}</style><h1>报价单 Quotation</h1><p>型号：CPQ-DEMO-EQUIPMENT-A；数量：2；金额：¥12,345.67</p>');
 
     $file = $tmpDir . DIRECTORY_SEPARATOR . 'cpq_poc_quote.pdf';
     $mpdf->Output($file, Mpdf\Output\Destination::FILE);

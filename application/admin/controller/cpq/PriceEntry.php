@@ -7,6 +7,7 @@ use app\admin\model\cpq\PriceEntry as PriceEntryModel;
 use app\common\controller\Backend;
 use app\common\service\cpq\ImportPreviewService;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use think\Db;
 
 /**
  * 价格条目
@@ -21,6 +22,7 @@ class PriceEntry extends Backend
     protected $modelValidate = true;
     protected $modelSceneValidate = true;
     protected $searchFields = 'price_book_id,target_id';
+    protected $noNeedRight = ['selectbook', 'selecttarget'];
     protected $cpqScopeType = null;
     protected $cpqRelations = [];
     protected $cpqFormDefaults = [
@@ -34,6 +36,137 @@ class PriceEntry extends Backend
         $this->model = new PriceEntryModel();
         $this->view->assign('targetTypeList', $this->model->getTargetTypeList());
         $this->assignconfig('targetTypeList', $this->model->getTargetTypeList());
+    }
+
+    /**
+     * 可维护价格表下拉：新增价格条目时只允许选择草稿或待审批版本。
+     */
+    public function selectbook()
+    {
+        $this->request->filter(['trim', 'strip_tags', 'htmlspecialchars']);
+
+        $keyValue = $this->request->post('keyValue', null);
+        $qWords = $this->request->post('q_word/a', []);
+        $keyword = trim(implode(' ', array_map('strval', $qWords)));
+        $pageNumber = max(1, (int)$this->request->post('pageNumber', 1));
+        $pageSize = min(100, max(1, (int)$this->request->post('pageSize', 10)));
+        $priceBookIds = [];
+        if ($keyValue !== null && $keyValue !== '') {
+            $priceBookIds = array_filter(array_map('intval', is_array($keyValue) ? $keyValue : explode(',', (string)$keyValue)));
+            if (empty($priceBookIds)) {
+                return json(['list' => [], 'total' => 0]);
+            }
+        }
+
+        $applyFilter = function ($query) use ($priceBookIds, $keyword) {
+            if (!empty($priceBookIds)) {
+                return $query->where('id', 'in', $priceBookIds);
+            }
+            $query->where('status', 'in', ['draft', 'pending']);
+            if ($keyword !== '') {
+                return $query->where('name|code', 'like', '%' . $keyword . '%');
+            }
+            return $query;
+        };
+
+        $total = $applyFilter(Db::name('cpq_price_book'))->count();
+        if ($total <= 0) {
+            return json(['list' => [], 'total' => 0]);
+        }
+
+        $rows = $applyFilter(Db::name('cpq_price_book'))
+            ->field('id,code,name,version,status')
+            ->order('id', 'desc')
+            ->page($pageNumber, $pageSize)
+            ->select();
+        $statusLabels = [
+            'draft' => '草稿',
+            'pending' => '待审批',
+            'published' => '已发布',
+            'expired' => '已失效',
+        ];
+        $list = [];
+        foreach ($rows as $row) {
+            $name = trim((string)$row['name']);
+            $label = $name !== '' ? $name : trim((string)$row['code']);
+            $list[] = [
+                'id' => (int)$row['id'],
+                'name' => sprintf('%s（V%d · %s）', $label, (int)$row['version'], $statusLabels[$row['status']] ?? $row['status']),
+            ];
+        }
+
+        return json(['list' => $list, 'total' => $total]);
+    }
+
+    /**
+     * 定价对象下拉（selectpage 数据源）：按 target_type 在对应对象表内检索 code/name。
+     * 只读检索接口，通过 $noNeedRight 跳过权限规则校验（仍要求登录）。
+     */
+    public function selecttarget()
+    {
+        $this->request->filter(['trim', 'strip_tags', 'htmlspecialchars']);
+
+        $type = (string)$this->request->post('target_type', '');
+        $tableMap = PriceEntryModel::TARGET_TABLES;
+        if (!isset($tableMap[$type])) {
+            return json(['list' => [], 'total' => 0]);
+        }
+        $table = $tableMap[$type];
+
+        // 回显（编辑态）：按主键精确查询
+        $keyValue = $this->request->post('keyValue', null);
+        // selectpage 插件固定以 q_word[] 数组形式提交搜索词
+        $qWords = $this->request->post('q_word/a', []);
+        $keyword = trim(implode(' ', array_map('strval', $qWords)));
+        $pageNumber = max(1, (int)$this->request->post('pageNumber', 1));
+        $pageSize = min(100, max(1, (int)$this->request->post('pageSize', 10)));
+
+        $targetIds = [];
+        $searchWords = [];
+        if ($keyValue !== null && $keyValue !== '') {
+            $targetIds = array_filter(array_map('intval', is_array($keyValue) ? $keyValue : explode(',', (string)$keyValue)));
+            if (empty($targetIds)) {
+                return json(['list' => [], 'total' => 0]);
+            }
+        } elseif ($keyword !== '') {
+            $searchWords = array_filter(array_map('trim', explode(' ', $keyword)));
+        }
+
+        $applyFilter = function ($query) use ($targetIds, $searchWords) {
+            if (!empty($targetIds)) {
+                return $query->where('id', 'in', $targetIds);
+            }
+            if (!empty($searchWords)) {
+                return $query->where(function ($subQuery) use ($searchWords) {
+                    foreach ($searchWords as $word) {
+                        $subQuery->whereOr('name', 'like', "%{$word}%")
+                            ->whereOr('code', 'like', "%{$word}%");
+                    }
+                });
+            }
+            return $query;
+        };
+
+        $total = $applyFilter(Db::name($table))->count();
+        if ($total <= 0) {
+            return json(['list' => [], 'total' => 0]);
+        }
+
+        $rows = $applyFilter(Db::name($table))
+            ->order('id', 'asc')
+            ->page($pageNumber, $pageSize)
+            ->field('id,code,name')
+            ->select();
+        $list = [];
+        foreach ($rows as $row) {
+            $name = trim((string)($row['name'] ?? ''));
+            if ($name === '') {
+                $name = trim((string)($row['code'] ?? ''));
+            }
+            $list[] = ['id' => (int)$row['id'], 'name' => $name];
+        }
+
+        return json(['list' => $list, 'total' => $total]);
     }
 
     /**

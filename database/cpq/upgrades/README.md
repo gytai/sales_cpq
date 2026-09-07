@@ -6,7 +6,7 @@
 2. 内容：只写增量 `ALTER TABLE` / `CREATE TABLE IF NOT EXISTS` / 索引与数据订正；表名使用 `__PREFIX__` 占位符，由执行方替换为当前前缀（`fa_`）。
 3. 字符集：新增表/字段显式声明 `utf8mb4` + `COLLATE utf8mb4_general_ci`，与 `install.sql` 和服务端配置一致。
 4. 可前滚：每个脚本必须可在空库（先执行 `install.sql`）和已有数据库上执行通过；如需回滚，在脚本头部注释给出反向 SQL 或恢复说明。
-5. 执行：空库运行 `php think cpq:install` 后会把已有脚本标记为已应用；已有库在备份后运行 `php think cpq:upgrade`，由 `cpq_migration` 按文件名顺序幂等追踪。
+5. 执行：空库运行 `php think install` 后会把已有脚本标记为已应用；已有库在备份后运行 `php think cpq:upgrade`，由 `cpq_migration` 按文件名顺序幂等追踪。
 
 当前脚本：
 

@@ -170,6 +170,9 @@ check(in_array(UPGRADE_SCRIPT_8, $service->scriptFiles(), true), '升级脚本�
 echo "\n== 场景 A：空库安装语义 ==\n";
 $resetDatabase();
 $runInstall();
+check($tableExists('admin'), '合并基线包含 FastAdmin 基础表 fa_admin');
+check($tableExists('config'), '合并基线包含 FastAdmin 配置表 fa_config');
+check((int)$pdo->query('SELECT COUNT(*) FROM `' . PREFIX . 'admin`')->fetchColumn() >= 1, '合并基线携带基础初始数据（管理员初始行）');
 $marked = $service->markAllApplied($pdo);
 check(in_array(UPGRADE_SCRIPT, $marked, true), 'markAllApplied 标记了 ' . UPGRADE_SCRIPT);
 check($service->pendingScripts($pdo) === [], '空库安装后 pendingScripts 为空');

@@ -73,7 +73,14 @@ class QuoteDocumentService
                 throw new InvalidArgumentException('模板语言与生成语言不一致');
             }
         } else {
-            $template = $this->templateService->resolveDefaultTemplate($language, (string)$quote['market_scope'] ?: 'all');
+            // 市场范围：报价显式指定优先；未指定时按客户国家推导（CN=国内，其余=国际），
+            // 与 QuoteRevisionService::buildPricingRequest 的价格市场口径保持一致。
+            $marketScope = trim((string)$quote['market_scope']);
+            if ($marketScope === '' && !empty($quote['customer_id'])) {
+                $country = Db::name('cpq_customer')->where('id', (int)$quote['customer_id'])->value('country_code');
+                $marketScope = strtoupper((string)$country) === 'CN' ? 'domestic' : 'international';
+            }
+            $template = $this->templateService->resolveDefaultTemplate($language, $marketScope ?: 'all');
             if (!$template) {
                 throw new InvalidArgumentException('未找到该语言的默认报价模板，请先发布模板或显式指定模板');
             }
@@ -96,7 +103,17 @@ class QuoteDocumentService
                 }
                 return ['document' => $existing, 'job' => $asyncJob, 'created' => false, 'message' => '该版本已有正式文件，正式 PDF 不可覆盖；如需更新请创建修订版本'];
             }
-            if (in_array($existing['status'], [self::STATUS_PENDING, self::STATUS_PROCESSING], true)) {
+            if ($existing['status'] === self::STATUS_PENDING) {
+                // pending 记录可能来自一次失败的 Redis 投递；重复发起时安全补投。
+                // 即使原任务仍在队列中，process() 的 pending → processing 原子抢占也会阻止重复生成。
+                if (($asyncJob['status'] ?? '') === AsyncJobService::STATUS_FAILED) {
+                    $asyncJob = (new AsyncJobService())->retry($asyncJob['job_key'], $adminId, false);
+                }
+                $asyncJob = $this->dispatchJob((int)$existing['id'], $asyncJob);
+                $fresh = Db::name('cpq_quote_document')->where('id', (int)$existing['id'])->find();
+                return ['document' => $fresh, 'job' => $asyncJob, 'created' => false, 'redispatched' => true, 'message' => '该版本 PDF 已重新投递'];
+            }
+            if ($existing['status'] === self::STATUS_PROCESSING) {
                 return ['document' => $existing, 'job' => $asyncJob, 'created' => false, 'message' => '该版本 PDF 正在生成中'];
             }
             // failed → 重试：复用记录，重置状态并重新入队
@@ -109,7 +126,7 @@ class QuoteDocumentService
             if (($asyncJob['status'] ?? '') === AsyncJobService::STATUS_FAILED) {
                 $asyncJob = (new AsyncJobService())->retry($asyncJob['job_key'], $adminId, false);
             }
-            $this->pushJob((int)$existing['id']);
+            $asyncJob = $this->dispatchJob((int)$existing['id'], $asyncJob);
             $fresh = Db::name('cpq_quote_document')->where('id', (int)$existing['id'])->find();
             return ['document' => $fresh, 'job' => $asyncJob, 'created' => false, 'retried' => true, 'message' => '已重新排队生成'];
         }
@@ -127,7 +144,7 @@ class QuoteDocumentService
             'updatetime' => $now,
         ]);
         $asyncJob = $this->ensureUnifiedJob(['id' => $documentId], $quote, $adminId);
-        $this->pushJob($documentId);
+        $asyncJob = $this->dispatchJob($documentId, $asyncJob);
         (new AuditLogService())->record('request_pdf', 'cpq_quote_document', (int)$documentId, [
             'quote_id' => $quoteId,
             'revision_no' => (int)$quote['current_revision_no'],
@@ -299,7 +316,11 @@ class QuoteDocumentService
         if ($font) {
             $options['fontDir'] = array_merge($defaultConfig['fontDir'], [$font['dir']]);
             $options['fontdata'] = $defaultFontConfig['fontdata'] + [
-                $font['name'] => ['R' => $font['file'], 'TTCfontID' => ['R' => 0]],
+                $font['name'] => [
+                    'R' => $font['file'],
+                    'B' => $font['file'],
+                    'TTCfontID' => ['R' => 0, 'B' => 0],
+                ],
             ];
             $options['default_font'] = $font['name'];
         } elseif ($language === 'zh') {
@@ -456,6 +477,38 @@ class QuoteDocumentService
     private function pushJob($documentId)
     {
         Queue::push(QuoteDocumentJob::class, ['document_id' => (int)$documentId], 'default');
+    }
+
+    /**
+     * 投递失败时同步结束两套任务状态，避免数据库留下永远无法消费的 pending 记录。
+     */
+    private function dispatchJob($documentId, array $asyncJob = [])
+    {
+        try {
+            $this->pushJob((int)$documentId);
+        } catch (\Throwable $exception) {
+            $message = mb_substr($exception->getMessage(), 0, 500);
+            Db::name('cpq_quote_document')
+                ->where('id', (int)$documentId)
+                ->where('status', self::STATUS_PENDING)
+                ->update([
+                    'status' => self::STATUS_FAILED,
+                    'error_message' => '队列投递失败：' . $message,
+                    'updatetime' => time(),
+                ]);
+
+            $jobKey = isset($asyncJob['job_key']) ? (string)$asyncJob['job_key'] : '';
+            if ($jobKey !== '') {
+                $jobs = new AsyncJobService();
+                $jobs->claim($jobKey);
+                $jobs->fail($jobKey, 'CPQ_QUEUE_DISPATCH_FAILED', $message);
+            }
+
+            throw new RuntimeException('PDF 任务入队失败：' . $message, 0, $exception);
+        }
+
+        $jobKey = isset($asyncJob['job_key']) ? (string)$asyncJob['job_key'] : '';
+        return $jobKey !== '' ? (new AsyncJobService())->status($jobKey) : $asyncJob;
     }
 
     private function ensureUnifiedJob(array $document, array $quote, $adminId)

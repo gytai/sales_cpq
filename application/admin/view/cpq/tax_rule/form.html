@@ -12,7 +12,7 @@
     </div>
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">产品类型:</label>
-        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[product_type]" value="{$row.product_type|htmlentities}"></div>
+        <div class="col-xs-12 col-sm-3">{:build_select('row[product_type]', $productTypeList, $row.product_type, ['class'=>'form-control selectpicker'])}</div>
         <label class="control-label col-xs-12 col-sm-2">税率:</label>
         <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[rate]" value="{$row.rate|htmlentities}"><p class="help-block">[0,1] 之间的小数（如 0.13 表示 13%）；前端不做精度计算，原样提交。</p></div>
     </div>

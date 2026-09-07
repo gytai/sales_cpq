@@ -60,7 +60,7 @@ checkM4Frontend(
 $dashboardView = file_get_contents($root . '/application/admin/view/cpq/dashboard/index.html');
 $dashboardJs = file_get_contents($root . '/public/assets/js/backend/cpq/dashboard.js');
 $reportCommon = file_get_contents($root . '/public/assets/js/backend/cpq/report_common.js');
-$install = file_get_contents($root . '/application/admin/command/CpqInstall.php');
+$install = file_get_contents($root . '/application/common/service/cpq/MenuRuleService.php');
 
 foreach (['company', 'sales_org_id', 'product_line', 'region_id', 'currency', 'created_from', 'created_to'] as $filter) {
     checkM4Frontend(

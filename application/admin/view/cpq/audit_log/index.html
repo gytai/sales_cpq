@@ -1,0 +1,20 @@
+<div class="panel panel-default panel-intro">
+    {:build_heading()}
+    <div class="panel-body">
+        <div class="widget-body no-padding">
+            <div id="toolbar" class="toolbar">
+                {:build_toolbar('refresh')}
+                <input type="text" id="cpq-audit-action" class="form-control" style="display:inline-block;width:140px;margin-left:8px" placeholder="动作(如 create)">
+                <input type="text" id="cpq-audit-object-type" class="form-control" style="display:inline-block;width:170px;margin-left:4px" placeholder="对象表(如 cpq_quote)">
+                <input type="text" id="cpq-audit-object-id" class="form-control" style="display:inline-block;width:100px;margin-left:4px" placeholder="对象ID">
+                <input type="text" id="cpq-audit-user-id" class="form-control" style="display:inline-block;width:100px;margin-left:4px" placeholder="操作人ID">
+                <input type="text" id="cpq-audit-from" class="form-control datetimepicker" data-date-format="YYYY-MM-DD" style="display:inline-block;width:130px;margin-left:4px" placeholder="创建自">
+                <input type="text" id="cpq-audit-to" class="form-control datetimepicker" data-date-format="YYYY-MM-DD" style="display:inline-block;width:130px;margin-left:4px" placeholder="创建至">
+            </div>
+            <p class="text-muted" style="padding:8px 15px 0;margin:0">审计日志只增不删，本页面仅提供查询与详情查看；仅审计与系统管理员角色可访问。</p>
+            <table id="table" class="table table-striped table-bordered table-hover table-nowrap"
+                   data-auth-detail="{:$auth->check('cpq/audit_log/detail')}"
+                   width="100%"></table>
+        </div>
+    </div>
+</div>

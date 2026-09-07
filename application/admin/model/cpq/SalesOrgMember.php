@@ -1,0 +1,38 @@
+<?php
+
+namespace app\admin\model\cpq;
+
+use think\Model;
+
+class SalesOrgMember extends Model
+{
+    protected $name = 'cpq_sales_org_member';
+    protected $autoWriteTimestamp = 'int';
+    protected $createTime = 'createtime';
+    protected $updateTime = 'updatetime';
+    protected $append = ['status_text'];
+
+    public function getStatusList()
+    {
+        return [
+            'normal' => '正常',
+            'hidden' => '停用',
+        ];
+    }
+
+    public function getStatusTextAttr($value, $data)
+    {
+        $status = $data['status'] ?? '';
+        return $this->getStatusList()[$status] ?? $status;
+    }
+
+    public function setEffectiveDateAttr($value)
+    {
+        return $value === '' || $value === null ? null : $value;
+    }
+
+    public function setExpiryDateAttr($value)
+    {
+        return $value === '' || $value === null ? null : $value;
+    }
+}

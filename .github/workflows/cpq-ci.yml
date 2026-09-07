@@ -1,0 +1,103 @@
+# CPQ 最小 CI（方案 §13 M0：建立测试和 CI）
+# 基线：PHP 7.4 / Composer 2.2 / MySQL 8.0 / Redis 7.2，与 ADR 0003 一致
+name: cpq-ci
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  unit:
+    name: 单元测试与依赖锁定
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP 7.4 + 扩展
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.4"
+          extensions: pdo_mysql, bcmath, zip, gd, mbstring, curl, redis
+          tools: composer:v2.2
+
+      - name: 安装中文字体（mpdf PoC 需要）
+        run: sudo apt-get update && sudo apt-get install -y fonts-wqy-zenhei
+
+      - name: 按锁文件安装依赖（锁文件必须入库，见 ADR 0002）
+        run: composer install --no-interaction --no-scripts --prefer-dist
+
+      - name: CPQ PHP 语法检查
+        run: |
+          find application/admin/controller/cpq application/admin/model/cpq \
+               application/admin/validate/cpq application/common/service application/common/repository \
+               application/api/controller/cpq tests/cpq -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: 单元测试
+        run: composer test:cpq
+
+      - name: 规则静态分析与性能单元测试（GYTAI-66）
+        run: composer test:cpq-rules
+
+      - name: 组件 PoC（PDF / Excel；队列在 integration 作业验证）
+        run: php tests/cpq/poc.php --skip-queue
+
+  integration:
+    name: 空库安装与集成测试
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: fastadmin
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost -proot"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+          --character-set-server=utf8mb4
+          --collation-server=utf8mb4_general_ci
+          --default-authentication-plugin=mysql_native_password
+      redis:
+        image: redis:7.2-alpine
+        ports: ["6379:6379"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP 7.4 + 扩展
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.4"
+          extensions: pdo_mysql, bcmath, zip, gd, mbstring, curl, redis
+          tools: composer:v2.2
+
+      - name: 安装中文字体（mpdf PoC 需要）
+        run: sudo apt-get update && sudo apt-get install -y fonts-wqy-zenhei
+
+      - name: 按锁文件安装依赖
+        run: composer install --no-interaction --no-scripts --prefer-dist
+
+      - name: 空库安装 FastAdmin（自动生成 .env 并写入数据库配置）
+        run: |
+          php think install --hostname 127.0.0.1 --hostport 3306 --database fastadmin \
+            --username root --password root --prefix fa_ --force=true
+
+      - name: 修正 .env 队列段（install 会全局替换 hostname/hostport 行，会冲掉 [queue]）
+        run: |
+          php -r '$t = file_get_contents(".env"); $t = preg_replace("/\n\[queue\][\s\S]*$/", "", $t); file_put_contents(".env", rtrim($t) . "\n\n[queue]\nconnector = Redis\nhostname = 127.0.0.1\nhostport = 6379\npassword =\nselect = 0\n");'
+
+      - name: 安装 CPQ 表与演示数据
+        run: php think cpq:install --demo
+
+      - name: cpq:install 幂等复跑（升级路径验证）
+        run: php think cpq:install
+
+      - name: 集成测试
+        run: composer test:cpq-integration
+
+      - name: 规则引擎与 BOM 校验集成测试（GYTAI-66）
+        run: composer test:cpq-rule-engine
+
+      - name: 队列 / PDF / Excel PoC（Redis 真实链路）
+        run: php tests/cpq/poc.php

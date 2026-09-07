@@ -1,0 +1,46 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <input type="hidden" name="row[force]" value="0">
+    {if isset($counterCount) && $counterCount > 0}
+    <div class="alert alert-warning" style="margin:0 15px 10px">该规则已产生 {$counterCount} 条编号计数器，修改编号格式将影响后续编号，保存时需二次确认。</div>
+    {/if}
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">规则编码:</label>
+        <div class="col-xs-12 col-sm-7"><input class="form-control" data-rule="required" maxlength="64" name="row[code]" value="{$row.code|htmlentities}"><p class="help-block">1-64 位字母/数字/._-，全局唯一，如 quote。</p></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">规则名称:</label>
+        <div class="col-xs-12 col-sm-7"><input class="form-control" data-rule="required" maxlength="120" name="row[name]" value="{$row.name|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">编号格式:</label>
+        <div class="col-xs-12 col-sm-7"><input class="form-control" data-rule="required" maxlength="120" name="row[pattern]" value="{$row.pattern|htmlentities}"><p class="help-block">必须包含 {SEQn} 占位符（n=1-10）；支持 {YYYY} {MM} {DD} {SCOPE}。</p></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">编号周期:</label>
+        <div class="col-xs-12 col-sm-7">
+            <select class="form-control" name="row[period_type]">
+                <option value="none" {eq name="row.period_type" value="none"}selected{/eq}>不重置</option>
+                <option value="year" {eq name="row.period_type" value="year"}selected{/eq}>按年重置</option>
+                <option value="month" {eq name="row.period_type" value="month"}selected{/eq}>按月重置</option>
+                <option value="day" {eq name="row.period_type" value="day"}selected{/eq}>按日重置</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">起始序号:</label>
+        <div class="col-xs-12 col-sm-7"><input class="form-control" type="number" min="1" name="row[initial_value]" value="{$row.initial_value|htmlentities}"><p class="help-block">仅对新周期/新范围的首个计数器生效。</p></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">状态:</label>
+        <div class="col-xs-12 col-sm-7">
+            <select class="form-control" name="row[status]">
+                <option value="enabled" {eq name="row.status" value="enabled"}selected{/eq}>启用</option>
+                <option value="disabled" {eq name="row.status" value="disabled"}selected{/eq}>停用</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-3"></label>
+        <div class="col-xs-12 col-sm-7"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div>
+    </div>
+</form>

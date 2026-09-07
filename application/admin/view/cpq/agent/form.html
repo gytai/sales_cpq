@@ -1,0 +1,37 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <input type="hidden" name="row[owner_id]" value="{$row.owner_id|htmlentities}">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">代理商编码:</label>
+        <div class="col-xs-12 col-sm-8"><input class="form-control" data-rule="required" name="row[code]" value="{$row.code|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">关联客户:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control selectpage" data-rule="required" data-source="cpq/customer/index" data-field="name" name="row[customer_id]" value="{$row.customer_id|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">代理等级:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control selectpage" data-source="cpq/agent_level/index" data-field="name" name="row[agent_level_id]" value="{$row.agent_level_id|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">授权销售区域:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[authorized_regions]" value="{$row.authorized_regions|htmlentities}" placeholder="区域ID JSON数组，如 [1,2]"></div>
+        <label class="control-label col-xs-12 col-sm-2">授权产品线:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[authorized_lines]" value="{$row.authorized_lines|htmlentities}" placeholder="产品线编码JSON数组"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">授权生效日期:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control datetimepicker" data-date-format="YYYY-MM-DD" name="row[auth_start_date]" value="{$row.auth_start_date|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">授权失效日期:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control datetimepicker" data-date-format="YYYY-MM-DD" name="row[auth_end_date]" value="{$row.auth_end_date|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">信用额度:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[credit_limit]" value="{$row.credit_limit|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">状态:</label>
+        <div class="col-xs-12 col-sm-8">{:build_radios('row[status]', $statusList, $row.status)}</div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div>
+    </div>
+</form>

@@ -1,0 +1,44 @@
+<style>
+    .cpq-quote-diff .text-amount {font-family:Menlo,Consolas,monospace}
+    .cpq-quote-diff .diff-added {background:#f0fff4}
+    .cpq-quote-diff .diff-removed {background:#fff5f5}
+    .cpq-quote-diff .diff-modified {background:#fffaf0}
+    .cpq-quote-diff td,.cpq-quote-diff th {word-break:break-all}
+</style>
+<div class="panel panel-default panel-intro cpq-quote-diff">
+    {:build_heading()}
+    <div class="panel-body">
+        <div class="row" style="margin-bottom:15px">
+            <div class="col-sm-3"><div class="form-group"><label>起始版本（from）</label><select class="form-control" id="cpq-diff-from"></select></div></div>
+            <div class="col-sm-3"><div class="form-group"><label>结束版本（to）</label><select class="form-control" id="cpq-diff-to"></select></div></div>
+            <div class="col-sm-6"><div class="form-group"><label>&nbsp;</label><div>
+                <button type="button" class="btn btn-primary" id="cpq-diff-run"><i class="fa fa-exchange"></i> 对比版本</button>
+                <a href="cpq/quote/detail/ids/{$quote.id}" class="btn btn-default"><i class="fa fa-list"></i> 返回详情</a>
+            </div></div></div>
+        </div>
+        <p class="text-muted">报价：<strong>{$quote.code|htmlentities}</strong> {$quote.name|htmlentities}（当前版本 v{$quote.current_revision_no}）。差异基于冻结价格快照计算，历史版本不随主数据变化。</p>
+        <div id="cpq-diff-error" class="alert alert-danger hidden"></div>
+        <div id="cpq-diff-empty" class="well text-muted">选择两个版本后点击「对比版本」。</div>
+        <div id="cpq-diff-result" class="hidden">
+            <div class="panel panel-default">
+                <div class="panel-heading">汇总金额差异（服务端 Decimal 字符串原样展示）</div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-condensed" style="margin-bottom:0">
+                        <thead><tr><th>口径</th><th>版本 <span id="cpq-diff-from-no"></span></th><th>版本 <span id="cpq-diff-to-no"></span></th></tr></thead>
+                        <tbody id="cpq-diff-totals"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">明细行差异（<span id="cpq-diff-count">0</span> 处）</div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-condensed" style="margin-bottom:0">
+                        <thead><tr><th style="width:70px">行号</th><th style="width:90px">变化</th><th>字段差异</th></tr></thead>
+                        <tbody id="cpq-diff-lines"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>window.__CPQ_REVISIONS__ = <?php echo $revisionsJson; ?>;window.__CPQ_QUOTE_ID__ = {:intval($quote.id)};</script>

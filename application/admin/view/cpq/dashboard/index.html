@@ -1,0 +1,109 @@
+<div class="panel panel-default panel-intro">
+    {:build_heading()}
+    <div class="panel-body">
+        <form id="cpq-filter-form" class="form-inline" style="margin-bottom:12px">
+            <select name="company" class="form-control" title="事业部">
+                <option value="">全部事业部</option>
+                {foreach name="companyList" item="company"}
+                <option value="{$company}">{$company}</option>
+                {/foreach}
+            </select>
+            <input type="number" name="sales_org_id" class="form-control" placeholder="销售组织ID" style="width:110px">
+            <select name="product_line" class="form-control" title="产品线">
+                <option value="">全部产品线</option>
+                {foreach name="productLineList" item="line"}
+                <option value="{$line}">{$line}</option>
+                {/foreach}
+            </select>
+            <input type="number" name="region_id" class="form-control" placeholder="区域ID" style="width:100px">
+            <select name="currency" class="form-control" title="币种">
+                <option value="">全部币种</option>
+                {foreach name="currencyList" item="currency"}
+                <option value="{$currency}">{$currency}</option>
+                {/foreach}
+            </select>
+            <input type="date" name="created_from" class="form-control" title="创建开始">
+            <input type="date" name="created_to" class="form-control" title="创建结束">
+            <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> 查询</button>
+            <button type="button" class="btn btn-default cpq-filter-reset"><i class="fa fa-undo"></i> 重置</button>
+        </form>
+
+        <div class="row" id="cpq-kpi-row"></div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">报价漏斗</div>
+                    <div class="panel-body"><div id="cpq-chart-funnel" style="height:300px"></div></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">近12个月趋势</div>
+                    <div class="panel-body"><div id="cpq-chart-trend" style="height:300px"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">事业部分布</div>
+                    <div class="panel-body"><div id="cpq-chart-business-unit" style="height:260px"></div></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">产品线分布</div>
+                    <div class="panel-body"><div id="cpq-chart-product-line" style="height:260px"></div></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">产品系列分布</div>
+                    <div class="panel-body"><div id="cpq-chart-series" style="height:260px"></div></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">产品型号分布</div>
+                    <div class="panel-body"><div id="cpq-chart-model" style="height:260px"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="cpq-risk-row"></div>
+
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">我的待审批</div>
+                    <div class="panel-body" style="padding:0">
+                        <table class="table table-striped table-hover" style="margin-bottom:0">
+                            <thead>
+                            <tr>
+                                <th>单号</th>
+                                <th>名称</th>
+                                <th>客户</th>
+                                <th>节点</th>
+                                <th>金额</th>
+                                <th>到达时间</th>
+                                <th>SLA</th>
+                            </tr>
+                            </thead>
+                            <tbody id="cpq-todo-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">快捷入口</div>
+                    <div class="panel-body" id="cpq-quick-links"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

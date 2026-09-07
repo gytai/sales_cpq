@@ -1,0 +1,152 @@
+<style>
+    .cpq-wizard .wizard-steps {list-style:none;padding:0;margin:0 0 15px;display:flex;flex-wrap:wrap}
+    .cpq-wizard .wizard-steps li {flex:1;min-width:120px;text-align:center;padding:8px 4px;border-bottom:3px solid #ddd;color:#999;cursor:default}
+    .cpq-wizard .wizard-steps li.active {border-color:#3c8dbc;color:#3c8dbc;font-weight:600}
+    .cpq-wizard .wizard-steps li.done {border-color:#00a65a;color:#00a65a}
+    .cpq-wizard .wizard-steps li.error {border-color:#dd4b39;color:#dd4b39}
+    .cpq-wizard .wizard-panel {display:none}
+    .cpq-wizard .wizard-panel.active {display:block}
+    .cpq-wizard .line-card {border:1px solid #e3e6ea;border-radius:4px;padding:12px;margin-bottom:12px;background:#fff}
+    .cpq-wizard .line-card.line-error {border-color:#dd4b39}
+    .cpq-wizard .line-card.line-warning {border-color:#f39c12}
+    .cpq-wizard .cfg-group {border:1px solid #eee;border-radius:4px;padding:10px;margin-bottom:10px}
+    .cpq-wizard .cfg-group.cfg-error {border-color:#dd4b39;background:#fff7f6}
+    .cpq-wizard .cfg-group.cfg-warning {border-color:#f39c12;background:#fffaf2}
+    .cpq-wizard .summary-value {font-size:20px;font-weight:600;word-break:break-all}
+    .cpq-wizard .amount-table td,.cpq-wizard .amount-table th {word-break:break-all}
+    .cpq-wizard .wizard-footer {margin-top:15px;padding-top:12px;border-top:1px solid #eee}
+    .cpq-wizard .terms-row {margin-bottom:8px}
+    .cpq-wizard .text-amount {font-family:Menlo,Consolas,monospace}
+</style>
+<div class="panel panel-default panel-intro cpq-wizard">
+    {:build_heading()}
+    <div class="panel-body">
+        <div id="cpq-wizard-state" class="clearfix" style="margin-bottom:10px">
+            <span class="pull-left text-muted" id="cpq-draft-hint">新报价尚未保存；点击「保存草稿」生成草稿。</span>
+            <span class="pull-right">
+                <button type="button" class="btn btn-default btn-sm" id="cpq-save-draft"><i class="fa fa-save"></i> 保存草稿</button>
+                <a href="cpq/quote/index" class="btn btn-default btn-sm"><i class="fa fa-list"></i> 返回列表</a>
+            </span>
+        </div>
+        <ul class="wizard-steps" id="cpq-steps">
+            <li data-step="1" class="active">1 客户基本信息</li>
+            <li data-step="2">2 选择产品</li>
+            <li data-step="3">3 产品配置</li>
+            <li data-step="4">4 价格与折扣</li>
+            <li data-step="5">5 商务条款</li>
+            <li data-step="6">6 预览与提交</li>
+        </ul>
+        <div id="cpq-wizard-error" class="alert alert-danger hidden" style="white-space:pre-wrap"></div>
+
+        <!-- 第 1 步：客户基本信息 -->
+        <div class="wizard-panel active" data-step="1">
+            <form id="cpq-quote-header" role="form" data-toggle="validator">
+                <div class="row">
+                    <div class="col-sm-6"><div class="form-group"><label>报价名称 <span class="text-danger">*</span></label><input class="form-control" name="name" data-rule="required" maxlength="200" value="{$row.name|default=''|htmlentities}"></div></div>
+                    <div class="col-sm-3"><div class="form-group"><label>产品线 <span class="text-danger">*</span></label>
+                        <select class="form-control selectpicker" name="product_line" data-rule="required">
+                            <option value="">请选择产品线</option>
+                            {foreach name="productLineList" item="line"}
+                            <option value="{$line|htmlentities}" {if isset($row.product_line) && $row.product_line == $line}selected{/if}>{$line|htmlentities}</option>
+                            {/foreach}
+                        </select>
+                    </div></div>
+                    <div class="col-sm-3"><div class="form-group"><label>报价币种 <span class="text-danger">*</span></label>
+                        {php}$quoteCurrency = isset($row['currency']) ? $row['currency'] : 'CNY';{/php}
+                        <select class="form-control selectpicker" name="currency" data-rule="required">
+                            <option value="CNY" {if $quoteCurrency == 'CNY'}selected{/if}>CNY 人民币</option>
+                            <option value="USD" {if $quoteCurrency == 'USD'}selected{/if}>USD 美元</option>
+                            <option value="EUR" {if $quoteCurrency == 'EUR'}selected{/if}>EUR 欧元</option>
+                        </select>
+                    </div></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"><div class="form-group"><label>客户 <span class="text-danger">*</span></label><input class="form-control selectpage" data-source="cpq/customer/index" data-field="name" data-rule="required" name="customer_id" value="{$row.customer_id|default=''|htmlentities}"></div></div>
+                    <div class="col-sm-4"><div class="form-group"><label>代理商</label><input class="form-control selectpage" data-source="cpq/agent/index" data-field="name" name="agent_id" value="{$row.agent_id|default=''|htmlentities}"></div></div>
+                    <div class="col-sm-4"><div class="form-group"><label>销售组织</label><input class="form-control selectpage" data-source="cpq/sales_org/index" data-field="name" name="sales_org_id" value="{$row.sales_org_id|default=''|htmlentities}"></div></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"><div class="form-group"><label>我方公司</label><input class="form-control" name="company" maxlength="120" placeholder="匹配公司级价格表/策略，如 DEMO公司" value="{$row.company|default=''|htmlentities}"></div></div>
+                    <div class="col-sm-4"><div class="form-group"><label>市场范围</label>
+                        {php}$quoteMarketScope = isset($row['market_scope']) ? $row['market_scope'] : '';{/php}
+                        <select class="form-control selectpicker" name="market_scope">
+                            <option value="" {if $quoteMarketScope == ''}selected{/if}>按客户国家自动推导</option>
+                            <option value="domestic" {if $quoteMarketScope == 'domestic'}selected{/if}>国内</option>
+                            <option value="international" {if $quoteMarketScope == 'international'}selected{/if}>国际</option>
+                        </select>
+                    </div></div>
+                </div>
+                <div class="form-group"><label>报价说明</label><textarea class="form-control" rows="3" name="description">{$row.description|default=''|htmlentities}</textarea></div>
+            </form>
+        </div>
+
+        <!-- 第 2 步：选择产品 -->
+        <div class="wizard-panel" data-step="2">
+            <div class="row">
+                <div class="col-sm-5"><div class="form-group"><label>产品型号</label><input class="form-control selectpage" id="cpq-pick-model" data-source="cpq/product_model/index" data-field="name" data-primary-key="id"></div></div>
+                <div class="col-sm-2"><div class="form-group"><label>数量</label><input class="form-control" id="cpq-pick-quantity" value="1"></div></div>
+                <div class="col-sm-2"><div class="form-group"><label>单位</label><input class="form-control" id="cpq-pick-unit" value="set"></div></div>
+                <div class="col-sm-3"><div class="form-group"><label>&nbsp;</label><div><button type="button" class="btn btn-primary" id="cpq-add-line"><i class="fa fa-plus"></i> 添加明细行</button></div></div></div>
+            </div>
+            <table class="table table-bordered table-hover" id="cpq-lines-table">
+                <thead><tr><th style="width:60px">行号</th><th>型号</th><th style="width:120px">数量</th><th style="width:90px">单位</th><th>配置状态</th><th style="width:80px">操作</th></tr></thead>
+                <tbody><tr class="cpq-lines-empty"><td colspan="6" class="text-muted text-center">尚未添加明细行</td></tr></tbody>
+            </table>
+        </div>
+
+        <!-- 第 3 步：产品配置 -->
+        <div class="wizard-panel" data-step="3">
+            <div class="clearfix" style="margin-bottom:10px">
+                <span class="text-muted">每一行明细独立配置；选择变化后自动做服务端校验，依赖/互斥与显隐以后端结果为准。</span>
+                <button type="button" class="btn btn-success btn-sm pull-right" id="cpq-validate-all"><i class="fa fa-check"></i> 校验全部配置</button>
+            </div>
+            <div id="cpq-config-lines"><p class="text-muted">请先在第 2 步添加明细行。</p></div>
+        </div>
+
+        <!-- 第 4 步：价格与折扣 -->
+        <div class="wizard-panel" data-step="4">
+            <div class="clearfix" style="margin-bottom:10px">
+                <span class="text-muted">手工折扣以比例填写（0～1，例如 0.95）；金额与审批等级以后端试算为准。</span>
+                <button type="button" class="btn btn-primary btn-sm pull-right" id="cpq-recalc"><i class="fa fa-calculator"></i> 服务端试算</button>
+            </div>
+            <div id="cpq-price-lines"><p class="text-muted">请先在第 2 步添加明细行，并点击「服务端试算」。</p></div>
+            <div id="cpq-price-summary" class="hidden">
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3"><div class="small-box bg-aqua"><div class="inner"><div class="summary-value text-amount" id="cpq-sum-total">—</div><p>含税总额</p></div></div></div>
+                    <div class="col-sm-3"><div class="small-box bg-yellow"><div class="inner"><div class="summary-value" id="cpq-sum-approval">—</div><p>整单最严格审批级别</p></div></div></div>
+                    <div class="col-sm-3"><div class="small-box bg-green"><div class="inner"><div class="summary-value" id="cpq-sum-submittable">—</div><p>是否允许提交</p></div></div></div>
+                    <div class="col-sm-3"><div class="small-box bg-gray"><div class="inner"><div class="summary-value text-amount" style="font-size:12px" id="cpq-sum-hash">—</div><p>价格哈希</p></div></div></div>
+                </div>
+                <div id="cpq-block-reasons"></div>
+            </div>
+        </div>
+
+        <!-- 第 5 步：商务条款 -->
+        <div class="wizard-panel" data-step="5">
+            <div class="clearfix" style="margin-bottom:10px">
+                <span class="text-muted">商务条款随报价一并冻结进版本快照；系统锁定条款不可修改。</span>
+                <button type="button" class="btn btn-default btn-sm pull-right" id="cpq-add-term"><i class="fa fa-plus"></i> 添加条款</button>
+            </div>
+            <div id="cpq-terms"><p class="text-muted" id="cpq-terms-empty">暂无条款，点击「添加条款」。</p></div>
+        </div>
+
+        <!-- 第 6 步：预览与提交 -->
+        <div class="wizard-panel" data-step="6">
+            <div id="cpq-preview"></div>
+            <div class="alert alert-info">
+                <i class="fa fa-info-circle"></i>
+                提交时服务端将执行最终配置校验与价格重算（与试算同一版本口径），通过后冻结配置/价格/条款快照并进入审批。
+                低于公司控制价、配置不合法或条款锁定的提交会被服务端拒绝并回到对应步骤。
+            </div>
+            <button type="button" class="btn btn-danger" id="cpq-submit"><i class="fa fa-send"></i> 提交报价</button>
+            <span class="text-muted" id="cpq-submit-hint"></span>
+        </div>
+
+        <div class="wizard-footer clearfix">
+            <button type="button" class="btn btn-default" id="cpq-prev" disabled><i class="fa fa-arrow-left"></i> 上一步</button>
+            <button type="button" class="btn btn-primary pull-right" id="cpq-next">下一步 <i class="fa fa-arrow-right"></i></button>
+        </div>
+    </div>
+</div>
+<script>window.__CPQ_QUOTE__ = <?php echo $quoteJson; ?>;</script>

@@ -1,0 +1,13 @@
+# Docker 构建上下文裁剪：镜像内依赖由 composer install 生成，不打入本机产物
+.git
+.multica
+.kimi
+.agent_context
+vendor
+runtime
+node_modules
+public/uploads
+.env
+.env.docker
+*.log
+.DS_Store

@@ -1,0 +1,28 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <input type="hidden" name="row[status]" value="{$row.status|htmlentities}">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">区域编码:</label>
+        <div class="col-xs-12 col-sm-8"><input class="form-control" data-rule="required" name="row[code]" value="{$row.code|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">区域名称:</label>
+        <div class="col-xs-12 col-sm-8"><input class="form-control" data-rule="required" name="row[name]" value="{$row.name|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">上级区域:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input class="form-control selectpage" data-source="cpq/region/index" data-field="name" name="row[parent_id]" value="{$row.parent_id|htmlentities}">
+            <span class="help-block">不选择上级区域时保持默认值 0，即作为根节点。</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">默认币种:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" maxlength="3" name="row[default_currency]" value="{$row.default_currency|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">所属销售组织:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control selectpage" data-source="cpq/sales_org/index" data-field="name" name="row[sales_org_id]" value="{$row.sales_org_id|htmlentities}"></div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div>
+    </div>
+</form>

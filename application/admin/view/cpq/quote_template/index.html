@@ -1,0 +1,21 @@
+<div class="panel panel-default panel-intro">
+    {:build_heading()}
+    <div class="panel-body">
+        <div class="widget-body no-padding">
+            <div id="toolbar" class="toolbar">
+                {:build_toolbar('refresh,add')}
+            </div>
+            <table id="table" class="table table-striped table-bordered table-hover table-nowrap"
+                   data-auth-add="{:$auth->check('cpq/quote_template/add')}"
+                   data-auth-edit="{:$auth->check('cpq/quote_template/edit')}"
+                   data-auth-del="{:$auth->check('cpq/quote_template/del')}"
+                   data-auth-preview="{:$auth->check('cpq/quote_template/preview')}"
+                   data-auth-publish="{:$auth->check('cpq/quote_template/publish')}"
+                   data-auth-copy="{:$auth->check('cpq/quote_template/copy')}"
+                   data-auth-setdefault="{:$auth->check('cpq/quote_template/setdefault')}"
+                   data-auth-disable="{:$auth->check('cpq/quote_template/disable')}"
+                   width="100%">
+            </table>
+        </div>
+    </div>
+</div>

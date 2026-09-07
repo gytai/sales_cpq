@@ -25,6 +25,7 @@
         "fastadminnet/fastadmin-mailer": "^2.0.0",
         "overtrue/pinyin": "^3.0",
         "phpoffice/phpspreadsheet": "^1.29.1",
+        "mpdf/mpdf": "^8.1",
         "overtrue/wechat": "^4.6",
         "ext-json": "*",
         "ext-curl": "*",
@@ -42,6 +43,24 @@
         "psr-4": {
             "addons\\": "addons/"
         }
+    },
+    "scripts": {
+        "test:cpq": "php tests/cpq/run.php",
+        "test:cpq-rules": "php tests/cpq/rule_analysis.php",
+        "test:cpq-rule-engine": "php tests/cpq/rule_engine.php",
+        "test:cpq-integration": "php tests/cpq/integration.php",
+        "test:cpq-poc": "php tests/cpq/poc.php",
+        "test:cpq-price-channel": "php tests/cpq/price_channel.php",
+        "test:cpq-pricing": "php tests/cpq/pricing.php",
+        "test:cpq-m3-platform": "php tests/cpq/m3_platform.php",
+        "test:cpq-master-data": "php tests/cpq/master_data.php",
+        "test:cpq-quote": "php tests/cpq/quote.php",
+        "test:cpq-m3-approval": "php tests/cpq/m3_approval.php",
+        "test:cpq-m4-reporting": "php tests/cpq/m4_reporting.php",
+        "test:cpq-security": "php tests/cpq/security.php",
+        "test:cpq-performance": "php tests/cpq/performance.php",
+        "test:cpq-upgrade": "php tests/cpq/upgrade.php",
+        "test:cpq-regression": "php tests/cpq/regression.php"
     },
     "repositories": [
         {

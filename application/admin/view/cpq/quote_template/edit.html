@@ -1,0 +1,11 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="edit/ids/{$row.id}">
+    {include file="cpq/quote_template/form" /}
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>
+<script>window.__CPQ_TEMPLATE_CONTENT__ = <?php echo json_encode(json_decode((string)$row['content_json'], true), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;</script>

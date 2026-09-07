@@ -1,0 +1,75 @@
+<style>
+    .cpq-quote-detail .summary-value {font-size:18px;font-weight:600;word-break:break-all}
+    .cpq-quote-detail .text-amount {font-family:Menlo,Consolas,monospace}
+    .cpq-quote-detail .dl-horizontal dt {width:110px}
+    .cpq-quote-detail .dl-horizontal dd {margin-left:130px;word-break:break-all}
+    .cpq-quote-detail pre {white-space:pre-wrap;word-break:break-all;max-height:240px;overflow:auto}
+    .cpq-quote-detail .cpq-snapshot-no-control .cpq-snapshot-control-col {display:none}
+</style>
+<div class="panel panel-default panel-intro cpq-quote-detail"
+     data-can-view-cost="{if $canViewCost}1{else /}0{/if}"
+     data-can-view-company-floor="{if $canViewCompanyFloor}1{else /}0{/if}">
+    {:build_heading()}
+    <div class="panel-body">
+        <div class="clearfix" style="margin-bottom:12px" id="cpq-detail-actions"></div>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">基本信息</div>
+                    <div class="panel-body" id="cpq-detail-base"></div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="panel panel-default">
+                    <div class="panel-heading">版本与提交</div>
+                    <div class="panel-body" id="cpq-detail-revision"></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">报价明细行（历史版本金额以冻结快照为准，不随主数据变化）</div>
+            <div class="table-responsive">
+                <table class="table table-striped table-condensed" style="margin-bottom:0">
+                    <thead><tr><th>行号</th><th>型号</th><th>数量</th><th>单位</th><th>手工折扣</th><th>配置指纹</th><th>配置</th></tr></thead>
+                    <tbody id="cpq-detail-lines"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="panel panel-default" id="cpq-detail-snapshot-panel">
+            <div class="panel-heading">价格快照（v<span id="cpq-snapshot-revision">-</span> 冻结于 <span id="cpq-snapshot-frozen-at">-</span>，不随价格主数据变化）</div>
+            <div class="panel-body" style="padding-bottom:4px">
+                <p class="text-muted" style="margin-bottom:8px" id="cpq-snapshot-currency"></p>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-condensed" style="margin-bottom:0">
+                    <thead><tr>
+                        <th>行号</th><th>型号</th><th>数量</th><th>手工折扣</th><th>单价小计（定价币种）</th>
+                        <th>费用</th><th>未税合计</th><th>税额</th><th>行含税合计（报价币种）</th><th>行审批级别</th>
+                        {if $canViewCompanyFloor}<th class="cpq-snapshot-control-col">控制单价</th>{/if}
+                    </tr></thead>
+                    <tbody id="cpq-snapshot-lines"></tbody>
+                    <tfoot id="cpq-snapshot-totals"></tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">商务条款</div>
+            <div class="table-responsive">
+                <table class="table table-striped table-condensed" style="margin-bottom:0">
+                    <thead><tr><th style="width:110px">类型</th><th style="width:120px">编码</th><th>内容</th><th style="width:90px">可编辑</th></tr></thead>
+                    <tbody id="cpq-detail-terms"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">版本历史（冻结版本只读）</div>
+            <div class="table-responsive">
+                <table class="table table-striped table-condensed" style="margin-bottom:0">
+                    <thead><tr><th>版本号</th><th>状态</th><th>审批级别</th><th>价格哈希</th><th>可提交</th><th>冻结时间</th></tr></thead>
+                    <tbody id="cpq-detail-revisions"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>window.__CPQ_QUOTE__ = <?php echo $quoteJson; ?>;</script>

@@ -8,12 +8,22 @@
 /public/uploads/*
 .DS_Store
 .idea
-composer.lock
+# composer.lock 必须入库锁定依赖组合（方案 §9.2 / docs/adr/0002）
 *.log
 *.css.map
 !.gitkeep
 .env
+.env.docker
 .svn
 .vscode
 node_modules
 .user.ini
+# 运行时产物
+.docker/
+# FastAdmin 安装产物：随机后台入口与安装锁为环境私有，不入库
+/application/admin/command/Install/install.lock
+/public/*.php
+!/public/index.php
+!/public/admin.php
+!/public/install.php
+!/public/router.php

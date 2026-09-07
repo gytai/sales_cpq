@@ -1,0 +1,66 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="alert alert-info" style="margin:0 15px 10px">本表单只保存基本信息；认证凭证请保存后通过列表行「重置凭证」单独设置（整体覆盖写入，永不回显）。新增配置若启用 HMAC/OAuth2 认证，需随后重置凭证方可启用。</div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">接口编码:</label>
+        <div class="col-xs-12 col-sm-7"><input class="form-control" data-rule="required" maxlength="64" name="row[code]" value="{$row.code|htmlentities}"><p class="help-block">全局唯一，如 erp-sap。</p></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">接口名称:</label>
+        <div class="col-xs-12 col-sm-7"><input class="form-control" data-rule="required" maxlength="120" name="row[name]" value="{$row.name|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">系统类型:</label>
+        <div class="col-xs-12 col-sm-7">
+            <select class="form-control" name="row[system_type]">
+                <option value="crm" {eq name="row.system_type" value="crm"}selected{/eq}>CRM</option>
+                <option value="erp" {eq name="row.system_type" value="erp"}selected{/eq}>ERP</option>
+                <option value="mail" {eq name="row.system_type" value="mail"}selected{/eq}>邮件</option>
+                <option value="other" {eq name="row.system_type" value="other"}selected{/eq}>其他</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">接口地址:</label>
+        <div class="col-xs-12 col-sm-7"><input class="form-control" maxlength="500" name="row[base_url]" value="{$row.base_url|htmlentities}" placeholder="https://..."></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">认证方式:</label>
+        <div class="col-xs-12 col-sm-7">
+            <select class="form-control" name="row[auth_type]">
+                <option value="none" {eq name="row.auth_type" value="none"}selected{/eq}>无认证</option>
+                <option value="hmac" {eq name="row.auth_type" value="hmac"}selected{/eq}>HMAC 签名</option>
+                <option value="oauth2" {eq name="row.auth_type" value="oauth2"}selected{/eq}>OAuth2</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">HMAC 算法:</label>
+        <div class="col-xs-12 col-sm-7">
+            <select class="form-control" name="row[hmac_algorithm]">
+                <option value="sha256" {eq name="row.hmac_algorithm" value="sha256"}selected{/eq}>sha256</option>
+                <option value="sha512" {eq name="row.hmac_algorithm" value="sha512"}selected{/eq}>sha512</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">超时(毫秒):</label>
+        <div class="col-xs-12 col-sm-7"><input class="form-control" type="number" min="100" max="60000" name="row[timeout_ms]" value="{$row.timeout_ms|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">最大重试:</label>
+        <div class="col-xs-12 col-sm-7"><input class="form-control" type="number" min="0" max="10" name="row[max_retries]" value="{$row.max_retries|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">状态:</label>
+        <div class="col-xs-12 col-sm-7">
+            <select class="form-control" name="row[status]">
+                <option value="enabled" {eq name="row.status" value="enabled"}selected{/eq}>启用</option>
+                <option value="disabled" {eq name="row.status" value="disabled"}selected{/eq}>停用</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-3"></label>
+        <div class="col-xs-12 col-sm-7"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div>
+    </div>
+</form>

@@ -1,0 +1,17 @@
+<div class="panel panel-default panel-intro">
+    {:build_heading()}
+    <div class="panel-body">
+        <div class="widget-body no-padding">
+            <div id="toolbar" class="toolbar">
+                {:build_toolbar('refresh,add')}
+                <a href="javascript:;" class="btn btn-info btn-cpq-simulate" title="给定审批等级与产品线，解析固定路径各节点候选人与 SLA"><i class="fa fa-play-circle"></i> 规则模拟</a>
+            </div>
+            <table id="table" class="table table-striped table-bordered table-hover table-nowrap"
+                   data-auth-edit="{:$auth->check('cpq/approval_rule/edit')}"
+                   data-auth-del="{:$auth->check('cpq/approval_rule/del')}"
+                   data-auth-toggle="{:$auth->check('cpq/approval_rule/toggle')}"
+                   width="100%">
+            </table>
+        </div>
+    </div>
+</div>

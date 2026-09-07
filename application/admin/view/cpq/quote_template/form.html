@@ -1,0 +1,69 @@
+<div class="form-group">
+    <label class="control-label col-xs-12 col-sm-2">模板编码:</label>
+    <div class="col-xs-12 col-sm-8">
+        <input class="form-control" data-rule="required" name="row[code]" value="{$row.code|default=''|htmlentities}" placeholder="如 QT-CN-STD">
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-12 col-sm-2">模板名称:</label>
+    <div class="col-xs-12 col-sm-8">
+        <input class="form-control" data-rule="required" name="row[name]" value="{$row.name|default=''|htmlentities}">
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-12 col-sm-2">英文名称:</label>
+    <div class="col-xs-12 col-sm-8">
+        <input class="form-control" name="row[name_en]" value="{$row.name_en|default=''|htmlentities}">
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-12 col-sm-2">模板语言:</label>
+    <div class="col-xs-12 col-sm-8">
+        <select class="form-control selectpicker" data-rule="required" name="row[language]">
+            {foreach name="languageList" key="langKey" item="langText"}
+            <option value="{$langKey}" {if isset($row.language) && $row.language eq $langKey}selected{/if}>{$langText}</option>
+            {/foreach}
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-12 col-sm-2">适用市场:</label>
+    <div class="col-xs-12 col-sm-8">
+        <select class="form-control selectpicker" data-rule="required" name="row[market_scope]">
+            {foreach name="marketList" key="marketKey" item="marketText"}
+            <option value="{$marketKey}" {if isset($row.market_scope) && $row.market_scope eq $marketKey}selected{/if}>{$marketText}</option>
+            {/foreach}
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-12 col-sm-2">纸张:</label>
+    <div class="col-xs-12 col-sm-8">
+        <select class="form-control selectpicker" name="row[paper_size]">
+            <option value="A4" {if !isset($row.paper_size) || $row.paper_size eq 'A4'}selected{/if}>A4</option>
+            <option value="Letter" {if isset($row.paper_size) && $row.paper_size eq 'Letter'}selected{/if}>Letter</option>
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-12 col-sm-2">模板板块:</label>
+    <div class="col-xs-12 col-sm-8">
+        <div id="cpq-tpl-sections" class="checkbox"></div>
+        <p class="help-block">勾选输出板块：封面/公司信息/产品表/技术参数/条款/签章/水印。</p>
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-12 col-sm-2">板块文案:</label>
+    <div class="col-xs-12 col-sm-8">
+        <div id="cpq-tpl-texts"></div>
+        <input type="hidden" id="cpq-tpl-content-json" name="row[content_json]" data-rule="required">
+        <p class="help-block">文案中可引用白名单变量（如 {{quote.code}}），点击右侧变量插入；未知变量保存时将被服务端拒绝。</p>
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-12 col-sm-2">可用变量:</label>
+    <div class="col-xs-12 col-sm-8">
+        <div id="cpq-tpl-variables" style="max-height:180px;overflow:auto;border:1px solid #e3e3e3;border-radius:4px;padding:6px"></div>
+    </div>
+</div>
+<script>window.__CPQ_TEMPLATE_VARIABLES__ = <?php echo json_encode($variableWhitelist, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;</script>

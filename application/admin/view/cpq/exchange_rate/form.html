@@ -1,0 +1,25 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <input type="hidden" name="row[status]" value="{$row.status|htmlentities}">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">源币种:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" maxlength="3" name="row[source_currency]" value="{$row.source_currency|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">目标币种:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" maxlength="3" name="row[target_currency]" value="{$row.target_currency|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">汇率:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[rate]" value="{$row.rate|htmlentities}"><p class="help-block">非负数字，最多 8 位小数；前端不做精度计算，原样提交。</p></div>
+        <label class="control-label col-xs-12 col-sm-2">来源:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[source]" value="{$row.source|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">生效日期:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control datetimepicker" data-rule="required" data-date-format="YYYY-MM-DD" name="row[effective_date]" value="{$row.effective_date|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">失效日期:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control datetimepicker" data-date-format="YYYY-MM-DD" name="row[expiry_date]" value="{$row.expiry_date|htmlentities}"></div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div>
+    </div>
+</form>

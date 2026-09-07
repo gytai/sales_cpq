@@ -1,0 +1,21 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">编码:</label><div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[code]" value="{$row.code|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">类型:</label><div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[type]" value="{$row.type|htmlentities}" placeholder="如：配件、安装服务、软件"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">中文名称:</label><div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[name]" value="{$row.name|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">英文名称:</label><div class="col-xs-12 col-sm-3"><input class="form-control" name="row[name_en]" value="{$row.name_en|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">单位:</label><div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[unit]" value="{$row.unit|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">产品线:</label><div class="col-xs-12 col-sm-3"><input class="form-control" name="row[product_line]" value="{$row.product_line|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">默认税类:</label><div class="col-xs-12 col-sm-3"><input class="form-control" name="row[tax_category]" value="{$row.tax_category|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">库存物料:</label><div class="col-xs-12 col-sm-3">{:build_radios('row[is_inventory_item]', ['1'=>'是','0'=>'否'], $row.is_inventory_item)}</div>
+    </div>
+    <div class="form-group"><label class="control-label col-xs-12 col-sm-2">销售说明:</label><div class="col-xs-12 col-sm-8"><textarea class="form-control" rows="4" name="row[description]">{$row.description|htmlentities}</textarea></div></div>
+    <div class="form-group"><label class="control-label col-xs-12 col-sm-2">状态:</label><div class="col-xs-12 col-sm-8">{:build_radios('row[status]', $statusList, $row.status)}</div></div>
+    <div class="form-group layer-footer"><label class="control-label col-xs-12 col-sm-2"></label><div class="col-xs-12 col-sm-8"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div></div>
+</form>

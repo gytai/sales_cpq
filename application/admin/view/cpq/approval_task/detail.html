@@ -1,0 +1,111 @@
+<style>
+    .cpq-approval-detail .text-amount {font-family:Menlo,Consolas,monospace}
+    .cpq-approval-detail .dl-horizontal dt {width:110px}
+    .cpq-approval-detail .dl-horizontal dd {margin-left:130px;word-break:break-all}
+    .cpq-approval-detail pre {white-space:pre-wrap;word-break:break-all;max-height:200px;overflow:auto}
+    .cpq-approval-detail .risk-item {margin-bottom:8px}
+    .cpq-approval-detail .timeline-item {border-left:3px solid #eee;padding:4px 0 4px 12px;margin-bottom:10px}
+    .cpq-approval-detail .timeline-item.timeline-danger {border-color:#dd4b39}
+    .cpq-approval-detail .timeline-item.timeline-success {border-color:#00a65a}
+    .cpq-approval-detail .timeline-item.timeline-warning {border-color:#f39c12}
+    .cpq-approval-detail .node-chip {display:inline-block;padding:4px 10px;margin:2px;border:1px solid #ddd;border-radius:3px}
+    .cpq-approval-detail .node-chip.node-current {border-color:#3c8dbc;background:#ecf5fb;font-weight:600}
+    .cpq-approval-detail .diff-added {background:#f0fff4}
+    .cpq-approval-detail .diff-removed {background:#fff5f5}
+    .cpq-approval-detail .diff-modified {background:#fffaf0}
+</style>
+<div class="panel panel-default panel-intro cpq-approval-detail">
+    {:build_heading()}
+    <div class="panel-body">
+        <div id="cpq-apd-stale" class="alert alert-danger hidden"></div>
+        <div id="cpq-apd-delegate" class="alert alert-info hidden"></div>
+
+        <div class="row">
+            <div class="col-md-7">
+                <div class="panel panel-default">
+                    <div class="panel-heading">报价摘要</div>
+                    <div class="panel-body" id="cpq-apd-quote"></div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">审批路径与 SLA</div>
+                    <div class="panel-body">
+                        <div id="cpq-apd-path" style="margin-bottom:8px"></div>
+                        <div id="cpq-apd-sla"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-7">
+                <div class="panel panel-default">
+                    <div class="panel-heading">配置与明细行（冻结快照，不随主数据变化）</div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-condensed" style="margin-bottom:0">
+                            <thead><tr><th>行号</th><th>型号</th><th>数量</th><th>单价小计</th><th>含税总额</th><th>分级</th><th>手工折扣</th></tr></thead>
+                            <tbody id="cpq-apd-lines"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">价格（按角色脱敏后的服务端结果，金额原样展示）</div>
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-condensed">
+                                <thead><tr><th style="width:70px">行号</th><th>型号</th><th>分级</th><th>金额（输出币种）</th></tr></thead>
+                                <tbody id="cpq-apd-price-lines"></tbody>
+                            </table>
+                        </div>
+                        <table class="table table-condensed" style="max-width:420px;margin-bottom:0">
+                            <tbody id="cpq-apd-price-totals"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">商务条款</div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-condensed" style="margin-bottom:0">
+                            <thead><tr><th style="width:100px">类型</th><th style="width:110px">编码</th><th>内容</th></tr></thead>
+                            <tbody id="cpq-apd-terms"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">风险项</div>
+                    <div class="panel-body" id="cpq-apd-risks"></div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">历史审批</div>
+                    <div class="panel-body" id="cpq-apd-actions" style="max-height:320px;overflow:auto"></div>
+                </div>
+                <div class="panel panel-primary" id="cpq-apd-operate-panel">
+                    <div class="panel-heading">审批操作（审批人无权修改报价，仅以下动作）</div>
+                    <div class="panel-body">
+                        <div id="cpq-apd-operate-hint" class="text-muted" style="margin-bottom:8px"></div>
+                        <div id="cpq-apd-operate">
+                            <button type="button" class="btn btn-success" data-action="approve"><i class="fa fa-check"></i> 批准</button>
+                            <button type="button" class="btn btn-danger" data-action="reject"><i class="fa fa-times"></i> 驳回</button>
+                            <button type="button" class="btn btn-warning" data-action="return"><i class="fa fa-reply"></i> 退回修改</button>
+                            <button type="button" class="btn btn-info" data-action="add_sign"><i class="fa fa-user-plus"></i> 加签</button>
+                            <button type="button" class="btn btn-default" data-action="transfer"><i class="fa fa-share"></i> 转交</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">版本差异（与上一冻结版本对比）</div>
+            <div class="panel-body" id="cpq-apd-diff"></div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">规则执行轨迹（节点任务与动作时间线）</div>
+            <div class="panel-body" id="cpq-apd-trace"></div>
+        </div>
+    </div>
+</div>
+<script>window.__CPQ_APPROVAL__ = <?php echo $detailJson; ?>;</script>

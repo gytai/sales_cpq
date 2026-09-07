@@ -1,0 +1,45 @@
+<style>
+    .cpq-pricing .panel-heading {font-weight:600}
+    .cpq-pricing .summary-value {font-size:20px;font-weight:600;word-break:break-all}
+    .cpq-pricing .trace-step {border-left:3px solid #3c8dbc;padding:8px 12px;margin:8px 0;background:#f7f9fb}
+    .cpq-pricing pre {white-space:pre-wrap;word-break:break-all;max-height:320px;overflow:auto}
+</style>
+<div class="row cpq-pricing" data-can-view-cost="{if $canViewCost}1{else /}0{/if}" data-can-view-company-floor="{if $canViewCompanyFloor}1{else /}0{/if}">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">试算上下文</div>
+            <div class="panel-body">
+                <form id="cpq-pricing-form" role="form" data-toggle="validator">
+                    <div class="form-group"><label>试算日期</label><input class="form-control datetimepicker" data-date-format="YYYY-MM-DD" data-rule="required" name="date" value="{:date('Y-m-d')}"></div>
+                    <div class="form-group"><label>客户</label><input class="form-control selectpage" data-source="cpq/customer/index" data-field="name" data-rule="required" name="customer_id"></div>
+                    <div class="form-group"><label>公司</label><input class="form-control" name="company" placeholder="用于匹配公司级价格表"></div>
+                    <div class="row"><div class="col-sm-6"><div class="form-group"><label>市场范围</label><select class="form-control" name="market_scope"><option value="domestic">国内</option><option value="international">国际</option></select></div></div><div class="col-sm-6"><div class="form-group"><label>区域编码</label><input class="form-control" name="region_code" placeholder="可由客户带出"></div></div></div>
+                    <div class="form-group"><label>代理等级编码</label><input class="form-control" name="agent_level" placeholder="可由客户所属代理商带出"></div>
+                    <div class="form-group"><label>报价币种</label><input class="form-control" maxlength="3" name="currency" value="CNY"></div>
+                    <div class="form-group"><label>产品型号</label><input class="form-control selectpage" data-source="cpq/product_model/index" data-field="name" data-rule="required" name="model_id"></div>
+                    <div class="form-group"><label>数量</label><input class="form-control" name="quantity" value="1" data-rule="required;decimal"></div>
+                    <div class="form-group"><label>配置 JSON</label><textarea class="form-control" rows="4" name="configuration" placeholder='{"POWER":"HIGH"}'>{}</textarea><span class="help-block">对象键为配置组编码，值为选项编码或值。</span></div>
+                    <div class="form-group"><label>配件/服务 JSON</label><textarea class="form-control" rows="3" name="accessories" placeholder='[{"id":1,"quantity":"1"}]'>[]</textarea></div>
+                    <div class="form-group"><label>手工折扣（0～1）</label><input class="form-control" name="manual_discount" placeholder="例如 0.95"></div>
+                    <div class="form-group"><label>折扣原因</label><textarea class="form-control" rows="2" name="discount_reason"></textarea></div>
+                    <button type="button" class="btn btn-primary" id="cpq-calculate"><i class="fa fa-calculator"></i> 试算</button>
+                    <button type="button" class="btn btn-info" id="cpq-explain"><i class="fa fa-list-ol"></i> 解释执行轨迹</button>
+                    <button type="button" class="btn btn-default" id="cpq-export" disabled><i class="fa fa-download"></i> 导出安全轨迹</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div id="cpq-pricing-empty" class="well text-muted">填写上下文后点击“试算”或“解释执行轨迹”。金额由服务端 Decimal 计算，页面仅原样展示字符串。</div>
+        <div id="cpq-pricing-error" class="alert alert-danger hidden"></div>
+        <div id="cpq-pricing-result" class="hidden">
+            <div class="row">
+                <div class="col-sm-4"><div class="small-box bg-aqua"><div class="inner"><div class="summary-value" id="cpq-total">—</div><p>含税总额</p></div></div></div>
+                <div class="col-sm-4"><div class="small-box bg-yellow"><div class="inner"><div class="summary-value" id="cpq-approval">—</div><p>所需审批级别</p></div></div></div>
+                <div class="col-sm-4"><div class="small-box bg-green"><div class="inner"><div class="summary-value" id="cpq-submittable">—</div><p>是否允许提交</p></div></div></div>
+            </div>
+            <div class="panel panel-default"><div class="panel-heading">金额轨迹与控制价结果</div><div class="panel-body" id="cpq-lines"></div></div>
+            <div class="panel panel-default" id="cpq-trace-panel"><div class="panel-heading">规则命中顺序与快照</div><div class="panel-body" id="cpq-trace"><p class="text-muted">“试算”不返回轨迹；点击“解释执行轨迹”查看。</p></div></div>
+        </div>
+    </div>
+</div>

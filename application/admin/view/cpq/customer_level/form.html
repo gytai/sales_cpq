@@ -1,0 +1,26 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">等级编码:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[code]" value="{$row.code|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">等级名称:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" name="row[name]" value="{$row.name|htmlentities}"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">排序:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" type="number" min="0" name="row[sort]" value="{$row.sort|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">默认折扣率:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[default_discount]" value="{$row.default_discount|htmlentities}" placeholder="如 0.95，范围 (0,1]"></div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">市场范围:</label>
+        <div class="col-xs-12 col-sm-8">{:build_radios('row[market_scope]', $marketScopeList, $row.market_scope)}</div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">状态:</label>
+        <div class="col-xs-12 col-sm-8">{:build_radios('row[status]', $statusList, $row.status)}</div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8"><button type="submit" class="btn btn-primary btn-embossed disabled">保存</button></div>
+    </div>
+</form>

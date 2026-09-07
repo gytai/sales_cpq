@@ -1,0 +1,377 @@
+openapi: "3.0.3"
+info:
+  title: CPQ API（FastAdmin 报价系统）
+  version: 1.0.0
+  description: |
+    统一前缀 `/api/cpq/v1`，通过 `application/route.php` 显式注册。
+    响应保持 FastAdmin `Api` 基类外壳；业务错误码与追踪号放入 `data`。
+
+    状态标记：`implemented` = 当前仓库已实现并有测试；`planned` = 方案规划，里程碑见标注。
+
+servers:
+  - url: /api/cpq/v1
+    description: 相对路径（同域部署）
+
+paths:
+  /product-models:
+    get:
+      tags: [产品配置]
+      summary: 查询可售型号（implemented, M1）
+      responses:
+        "200":
+          description: 型号列表
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /product-models/{id}/schema:
+    get:
+      tags: [产品配置]
+      summary: 获取配置结构和有效规则版本（implemented, M1）
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "200":
+          description: 配置 schema（groups/options/rules）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /configurations/validate:
+    post:
+      tags: [产品配置]
+      summary: 校验配置并返回规则结果（implemented, M1）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model_id, configuration]
+              properties:
+                model_id: {type: integer}
+                configuration:
+                  type: object
+                  additionalProperties: true
+                context:
+                  type: object
+                  description: 客户/市场上下文（预留）
+      responses:
+        "200":
+          description: 校验结果（is_valid/configuration/errors/warnings/bom/configuration_hash）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /configurations/bom:
+    post:
+      tags: [产品配置]
+      summary: 生成模拟 BOM（implemented, M1）
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model_id, configuration]
+              properties:
+                model_id: {type: integer}
+                configuration: {type: object}
+      responses:
+        "200":
+          description: BOM 行列表（material_code/quantity/unit/loss_rate）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+
+  /product-models/{id}/bom-check:
+    get:
+      tags: [产品配置]
+      summary: BOM 缺失映射校验（implemented, M1 / GYTAI-66）
+      description: 检查影响 BOM 的配置组中，每个选项是否有有效映射（选项物料编码或已发布 BOM 映射）或明确标记"不产生物料"。
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "200":
+          description: 校验结果（is_complete/missing_mappings）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+
+  /prices/calculate:
+    post:
+      tags: [价格]
+      summary: 确定性价格试算（implemented, M2 / GYTAI-68）
+      description: |
+        按固定 14 步流水线计算金额、三层控制价分级与整单最严格审批等级。
+        calculate 不返回逐行 price_trace；敏感字段按最低权限裁剪。低于公司
+        控制价时仍返回试算结果，但 `submittable=false`，提交端必须调用服务端
+        `assertSubmittable` 硬校验。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/PricingRequest"}
+            example:
+              date: "2026-09-01"
+              customer_id: 456
+              currency: CNY
+              lines:
+                - model_id: 123
+                  quantity: "2"
+                  configuration: {power_level: high}
+                  manual_discount: "0.95"
+                  discount_reason: 年度框架协议
+      responses:
+        "200":
+          description: 价格金额、分级、提交性与稳定 price_hash
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/PricingEnvelope"}
+        "422":
+          description: 输入、价格主数据、策略冲突或汇率错误
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ErrorEnvelope"}
+  /prices/explain:
+    post:
+      tags: [价格]
+      summary: 返回授权范围内的价格轨迹（implemented, M2 / GYTAI-68）
+      description: |
+        请求结构与 calculate 相同，返回逐行完整执行轨迹、价格表/条目/策略/
+        价格规则/税费/汇率快照。开放 API 固定按最低权限脱敏，不信任客户端
+        传入角色；需要成本或公司控制价时使用后台管理员接口并记录敏感查看审计。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/PricingRequest"}
+      responses:
+        "200":
+          description: 按权限裁剪后的完整 price_trace
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/PricingEnvelope"}
+        "422":
+          description: 输入、价格主数据、策略冲突或汇率错误
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ErrorEnvelope"}
+
+  /quotes:
+    get:
+      tags: [报价]
+      summary: 报价列表（planned, M2）
+      responses:
+        "200": {description: 分页列表}
+    post:
+      tags: [报价]
+      summary: 新建报价草稿（planned, M2）
+      responses:
+        "201": {description: 草稿}
+  /quotes/{id}:
+    get:
+      tags: [报价]
+      summary: 报价详情（planned, M2）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "200": {description: 详情}
+  /quotes/{id}/draft:
+    put:
+      tags: [报价]
+      summary: 修改草稿（planned, M2）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "200": {description: 更新后的草稿}
+  /quotes/{id}/revisions:
+    post:
+      tags: [报价]
+      summary: 创建修订版本（planned, M2）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "201": {description: 新版本}
+  /quotes/{id}/submit:
+    post:
+      tags: [报价]
+      summary: 最终重算并提交审批（planned, M2）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "200": {description: 审批实例}
+  /quotes/{id}/withdraw:
+    post:
+      tags: [报价]
+      summary: 撤回审批（planned, M3）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "200": {description: 撤回结果}
+  /quotes/{id}/documents:
+    post:
+      tags: [报价]
+      summary: 生成报价 PDF（异步任务, planned, M3）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "202": {description: 任务受理，轮询 jobs 接口}
+  /approval-tasks:
+    get:
+      tags: [审批]
+      summary: 我的审批任务（planned, M3）
+      responses:
+        "200": {description: 任务列表}
+  /approval-tasks/{id}/actions:
+    post:
+      tags: [审批]
+      summary: 执行审批动作（planned, M3）
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "200": {description: 动作结果}
+  /imports/{type}:
+    post:
+      tags: [任务]
+      summary: 创建导入预览（不写业务表）
+      parameters: [{name: type, in: path, required: true, schema: {type: string}}]
+      responses:
+        "202": {description: 返回 import_id、preview_token、逐行错误与是否强制异步}
+  /imports/{id}/confirm:
+    post:
+      tags: [任务]
+      summary: 确认预览并创建 Excel 导入任务
+      parameters: [{name: id, in: path, required: true, schema: {type: integer}}]
+      responses:
+        "202": {description: 导入任务受理；超过 5,000 行强制异步}
+  /jobs/{id}:
+    get:
+      tags: [任务]
+      summary: 查询 PDF/Excel/ERP 同步/邮件异步任务
+      parameters: [{name: id, in: path, required: true, schema: {type: string}}]
+      responses:
+        "200": {description: 任务状态}
+  /jobs/{id}/retry:
+    post:
+      tags: [任务]
+      summary: 受控重试失败任务
+      parameters: [{name: id, in: path, required: true, schema: {type: string}}]
+      responses:
+        "202": {description: 重新排队}
+  /jobs/{id}/error-report:
+    get:
+      tags: [任务]
+      summary: 下载脱敏错误报告
+      parameters: [{name: id, in: path, required: true, schema: {type: string}}]
+      responses:
+        "200": {description: JSON 错误报告}
+  /exports/quotes:
+    post:
+      tags: [任务]
+      summary: 按产品线数据范围创建报价明细 XLSX 导出任务
+      responses:
+        "202": {description: 导出任务受理}
+  /exports/{id}/download:
+    get:
+      tags: [任务]
+      summary: 使用短期令牌受控下载并记录审计
+      parameters: [{name: id, in: path, required: true, schema: {type: string}}]
+      responses:
+        "200": {description: XLSX 文件}
+
+components:
+  schemas:
+    Envelope:
+      type: object
+      description: FastAdmin Api 基类响应外壳
+      properties:
+        code: {type: integer, example: 1}
+        msg: {type: string, example: OK}
+        time: {type: integer, example: 1788400000}
+        data:
+          type: object
+          properties:
+            business_code: {type: string, example: OK}
+            trace_id: {type: string, example: "01J..."}
+            payload: {type: object}
+    PricingRequest:
+      type: object
+      properties:
+        date: {type: string, format: date, description: 试算基准日；省略时取 UTC 当日}
+        customer_id: {type: integer, nullable: true}
+        agent_id: {type: integer, nullable: true, description: 指定代理商；优先级仅次于指定客户}
+        currency: {type: string, pattern: "^[A-Z]{3}$", example: CNY}
+        company: {type: string}
+        market_scope: {type: string, enum: [domestic, international]}
+        region_code: {type: string}
+        customer_level: {type: string}
+        agent_level: {type: string}
+        model_id: {type: integer, description: 单行快捷输入时使用}
+        quantity: {type: string, pattern: "^\\d+(\\.\\d{1,4})?$", example: "1.0000"}
+        configuration: {type: object, additionalProperties: true}
+        accessories:
+          type: array
+          items: {$ref: "#/components/schemas/PricingAccessory"}
+        manual_discount: {type: string, description: "支付比例，范围 (0,1]；低于 1 必须提供原因", example: "0.95"}
+        discount_reason: {type: string}
+        lines:
+          type: array
+          minItems: 1
+          items: {$ref: "#/components/schemas/PricingLine"}
+      description: 顶层 model_id 表示单行快捷输入；多行报价使用 lines。
+    PricingLine:
+      type: object
+      required: [model_id]
+      properties:
+        model_id: {type: integer}
+        quantity: {type: string, example: "1"}
+        business_unit: {type: string}
+        product_line: {type: string}
+        configuration: {type: object, additionalProperties: true}
+        accessories:
+          type: array
+          items: {$ref: "#/components/schemas/PricingAccessory"}
+        manual_discount: {type: string, example: "0.95"}
+        discount_reason: {type: string}
+    PricingAccessory:
+      type: object
+      required: [id]
+      properties:
+        id: {type: integer}
+        quantity: {type: string, example: "1"}
+    PricingEnvelope:
+      allOf:
+        - {$ref: "#/components/schemas/Envelope"}
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                business_code: {type: string, example: OK}
+                trace_id: {type: string, example: "4f85be5b37414ea1a4dc670e"}
+                payload:
+                  type: object
+                  properties:
+                    date: {type: string, format: date}
+                    currency: {type: string, example: CNY}
+                    lines: {type: array, items: {type: object}}
+                    totals: {type: object, additionalProperties: {type: string}}
+                    approval_level: {type: string, enum: [none, line, company, forbidden]}
+                    submittable: {type: boolean}
+                    block_reasons: {type: array, items: {type: object}}
+                    price_trace: {type: object}
+                    price_hash: {type: string, pattern: "^[a-f0-9]{64}$"}
+    ErrorEnvelope:
+      type: object
+      properties:
+        code: {type: integer, example: 422}
+        msg: {type: string, example: 缺少 CNY→EUR 的有效汇率}
+        time: {type: integer}
+        data:
+          type: object
+          properties:
+            business_code: {type: string, example: CPQ_EXCHANGE_RATE_MISSING}
+            trace_id: {type: string}
+            payload: {type: object, additionalProperties: true}
+  securitySchemes:
+    ApiToken:
+      type: apiKey
+      in: header
+      name: token
+security:
+  - ApiToken: []

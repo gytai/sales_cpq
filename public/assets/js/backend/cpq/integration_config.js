@@ -11,7 +11,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
 
     var systemText = {crm: 'CRM', erp: 'ERP', mail: '邮件', other: '其他'};
     var authText = {none: '无鉴权', hmac: 'HMAC', oauth2: 'OAuth2'};
-    var statusText = {enabled: '启用', disabled: '停用'};
 
     function openResetCredential(row, table) {
         Layer.open({
@@ -100,10 +99,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                             : '<span class="label label-default">未配置</span>';
                     }},
                     {field: 'status', title: '状态', formatter: function (value) {
-                        var color = value === 'enabled' ? 'success' : 'gray';
-                        return '<span class="label label-' + color + '">' + escapeHtml(statusText[value] || value) + '</span>';
+                        var color = CpqCommon.statusCustom[value] || 'default';
+                        return '<span class="label label-' + color + '">' + escapeHtml(Config.statusList[value] || value) + '</span>';
                     }},
-                    {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime},
+                    {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange'},
                     {
                         field: 'operate', title: __('Operate'), table: table,
                         events: {

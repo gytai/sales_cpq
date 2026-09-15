@@ -57,7 +57,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                     {field: 'approver_role', title: '审批角色', operate: false, formatter: function (value) {
                         return value ? escapeHtml(value) : '<span class="text-muted">仅显式候选人</span>';
                     }},
-                    {field: 'product_line', title: '适用产品线', operate: 'LIKE', formatter: function (value) {
+                    {field: 'product_line', title: '产品线', operate: 'LIKE', formatter: function (value) {
                         return value ? escapeHtml(value) : '<span class="text-muted">全部（兜底）</span>';
                     }},
                     {field: 'candidate_admin_ids', title: '显式候选人', operate: false, formatter: function (value) {
@@ -72,7 +72,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                         }
                     }},
                     {field: 'sla_hours', title: 'SLA(小时)', operate: false},
-                    {field: 'version', title: '版本', operate: false, formatter: function (value) { return 'v' + escapeHtml(value); }},
+                    {field: 'version', title: '版本', operate: false},
                     {field: 'status', title: '状态', searchList: Config.statusList, custom: statusCustom, formatter: Table.api.formatter.status},
                     {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange'},
                     {

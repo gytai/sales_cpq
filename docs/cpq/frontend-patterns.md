@@ -135,3 +135,5 @@ php -S 127.0.0.1:8899 -t public public/router.php
 6. DevTools Console 无任何 RequireJS/JS 报错。
 
 自动化脚本（puppeteer-core + 本机 Chrome）见 M0 验证记录：登录、列表、表单校验、配置器合法/非法两态、控制台错误收集。服务层测试：`php tests/cpq/run.php`（单元）、`php tests/cpq/integration.php`（数据库集成）。
+
+页面一致性契约：`php tests/cpq/frontend_consistency.php` 固化「相同字段在各页面的交互方式一致」——日期列必须同时具备区间筛选与日期格式化、版本列关闭筛选、同一字段列标题唯一、定价对象与销售组织使用联动/可搜索下拉、版本化实体状态为隐藏域。已纳入 `tests/cpq/regression.php`，新增页面或调整列定义后跑一次回归即可发现漂移。

@@ -10,7 +10,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                 {field: 'code', title: '模板编码', operate: 'LIKE'},
                 {field: 'name', title: '模板名称', operate: 'LIKE'},
                 {field: 'product_model.name', title: '产品型号', operate: 'LIKE'},
-                {field: 'market_scope', title: '适用市场'},
+                {field: 'market_scope', title: '市场范围'},
                 {field: 'customer_level', title: '客户等级'},
                 {field: 'version', title: '版本', operate: false},
                 {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},

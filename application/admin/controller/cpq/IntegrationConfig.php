@@ -28,6 +28,16 @@ class IntegrationConfig extends Backend
     /** 可读角色 */
     const READ_ROLES = ['system_admin', 'auditor'];
 
+    /** 启停状态字典（视图下拉与列表徽标共用同一来源） */
+    const STATUS_LIST = ['enabled' => '启用', 'disabled' => '停用'];
+
+    public function _initialize()
+    {
+        parent::_initialize();
+        $this->view->assign('statusList', self::STATUS_LIST);
+        $this->assignconfig('statusList', self::STATUS_LIST);
+    }
+
     /**
      * 接口配置分页列表（全部字段经 publicConfig 净化）。
      */

@@ -41,8 +41,8 @@
         <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[trade_terms]" value="{$row.trade_terms|htmlentities}"></div>
     </div>
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">销售组织ID:</label>
-        <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[sales_org_id]" value="{$row.sales_org_id|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">所属销售组织:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control selectpage" data-source="cpq/sales_org/index" data-field="name" name="row[sales_org_id]" value="{$row.sales_org_id|htmlentities}"></div>
     </div>
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">状态:</label>

@@ -17,6 +17,7 @@
  *  - 500ms 配置校验/100 行 2s/PDF 30s/列表 2s → performance.php
  *  - 空库安装/已有库升级/幂等复跑            → upgrade.php
  *  - 前端静态契约（RequireJS/页面结构）      → frontend_*.php
+ *  - 同字段同交互（日期区间/版本列/表单控件）→ frontend_consistency.php
  *  - 组件 PoC（队列/PDF/Excel）              → poc.php（依赖 Redis，可用 --skip-env 跳过）
  *
  * 用法（容器内）：
@@ -46,6 +47,7 @@ $suites = [
     ['file' => 'frontend_m2_quote.php', 'label' => 'M2 报价前端静态契约',                'env' => false],
     ['file' => 'frontend_m3.php',    'label' => 'M3 前端静态契约',                       'env' => false],
     ['file' => 'frontend_m4.php',    'label' => 'M4 前端静态契约',                       'env' => false],
+    ['file' => 'frontend_consistency.php', 'label' => '页面一致性静态契约（同字段同交互）', 'env' => false],
     ['file' => 'integration.php',    'label' => '服务端集成（C-007，依赖演示数据）',     'env' => true],
     ['file' => 'poc.php',            'label' => 'M0 组件 PoC（队列/PDF/Excel）',         'env' => true],
 ];

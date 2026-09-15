@@ -21,8 +21,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                     {field: 'target_currency', title: '目标币种', operate: 'LIKE'},
                     {field: 'rate', title: '汇率', operate: false, formatter: CpqCommon.moneyFormatter},
                     {field: 'source', title: '来源'},
-                    {field: 'effective_date', title: '生效日期', operate: 'RANGE', addclass: 'datetimerange'},
-                    {field: 'expiry_date', title: '失效日期', operate: 'RANGE', addclass: 'datetimerange'},
+                    {field: 'effective_date', title: '生效日期', operate: 'RANGE', addclass: 'datetimerange', formatter: Table.api.formatter.date},
+                    {field: 'expiry_date', title: '失效日期', operate: 'RANGE', addclass: 'datetimerange', formatter: Table.api.formatter.date},
                     {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},
                     {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange'},
                     {field: 'operate', title: __('Operate'), table: table, events: CpqCommon.operateEvents(), formatter: Table.api.formatter.operate}

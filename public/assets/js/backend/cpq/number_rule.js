@@ -10,7 +10,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
     }
 
     var periodText = {none: '不重置', year: '按年', month: '按月', day: '按日'};
-    var statusText = {enabled: '启用', disabled: '停用'};
 
     var Controller = {
         index: function () {
@@ -51,10 +50,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                     {field: 'counters_count', title: '计数器', width: 70},
                     {field: 'max_current_value', title: '当前最大序号', width: 100},
                     {field: 'status', title: '状态', formatter: function (value) {
-                        var color = value === 'enabled' ? 'success' : 'gray';
-                        return '<span class="label label-' + color + '">' + escapeHtml(statusText[value] || value) + '</span>';
+                        var color = CpqCommon.statusCustom[value] || 'default';
+                        return '<span class="label label-' + color + '">' + escapeHtml(Config.statusList[value] || value) + '</span>';
                     }},
-                    {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime},
+                    {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange'},
                     {
                         field: 'operate', title: __('Operate'), table: table,
                         events: {

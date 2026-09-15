@@ -25,7 +25,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                     {field: 'unit', title: '单位'},
                     {field: 'min_qty', title: '最小数量', formatter: CpqCommon.moneyFormatter},
                     {field: 'max_qty', title: '最大数量', formatter: CpqCommon.moneyFormatter},
-                    {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime},
+                    {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange'},
                     {field: 'operate', title: __('Operate'), table: table, events: CpqCommon.operateEvents(), formatter: Table.api.formatter.operate}
                 ]]
             });

@@ -563,7 +563,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                     {field: 'name', title: '规则名称', operate: 'LIKE'},
                     {field: 'type', title: '规则类型', searchList: Config.typeList, formatter: Table.api.formatter.normal},
                     {field: 'product_model.name', title: '适用型号', operate: 'LIKE'},
-                    {field: 'product_line', title: '适用产品线'},
+                    {field: 'product_line', title: '产品线'},
                     {field: 'priority', title: '优先级'},
                     {field: 'severity', title: '严重级别', searchList: Config.severityList, formatter: Table.api.formatter.normal},
                     {field: 'version', title: '版本', operate: false},

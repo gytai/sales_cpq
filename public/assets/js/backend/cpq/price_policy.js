@@ -87,11 +87,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                 {field: 'agent_level', title: '代理等级'},
                 {field: 'customer_id', title: '指定客户ID'},
                 {field: 'agent_id', title: '指定代理商ID'},
-                {field: 'target_type', title: '目标类型', searchList: Config.targetTypeList, formatter: function (value) {
+                {field: 'target_type', title: '对象类型', searchList: Config.targetTypeList, formatter: function (value) {
                     var text = (Config.targetTypeList && Config.targetTypeList[value]) || value;
                     return $('<span>').text(text == null ? '' : String(text)).html();
                 }},
-                {field: 'target_id', title: '目标ID', operate: false},
+                {field: 'target_id', title: '对象ID', operate: false},
                 {field: 'currency', title: '币种'},
                 {field: 'unit', title: '单位'},
                 {field: 'guide_price', title: '指导价', formatter: CpqCommon.moneyFormatter, operate: false},
@@ -157,7 +157,34 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
             Controller.api.bindevent();
             CpqCommon.bindDetail();
         },
-        api: {bindevent: function () { Form.api.bindevent($('form[role=form]')); }}
+        api: {
+            bindevent: function () {
+                var form = $('form[role=form]');
+                Form.api.bindevent(form);
+
+                // 定价对象：按「对象类型」联动的可搜索下拉（复用价格条目 cpq/price_entry/selecttarget 数据源）
+                var $type = form.find('#cpq-target-type');
+                var $target = form.find('#cpq-target-id');
+                if ($target.length) {
+                    require(['selectpage'], function () {
+                        $target.selectPage({
+                            params: function () {
+                                return {target_type: $type.val()};
+                            },
+                            eAjaxSuccess: function (data) {
+                                data.list = typeof data.rows !== 'undefined' ? data.rows : (typeof data.list !== 'undefined' ? data.list : []);
+                                data.totalRow = typeof data.total !== 'undefined' ? data.total : (typeof data.totalRow !== 'undefined' ? data.totalRow : data.list.length);
+                                return data;
+                            }
+                        });
+                        // 切换对象类型后清空已选对象，避免跨类型残留错误 id
+                        $type.on('change', function () {
+                            $target.selectPageClear();
+                        });
+                    });
+                }
+            }
+        }
     };
     return Controller;
 });

@@ -9,8 +9,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
         return $('<span>').text(value == null ? '' : String(value)).html();
     }
 
-    var statusText = {enabled: '启用', disabled: '停用'};
-
     var Controller = {
         index: function () {
             Table.api.init({extend: {
@@ -53,10 +51,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                         return parseInt(value, 10) > 0 ? '<span class="label label-warning">' + parseInt(value, 10) + '</span>' : '0';
                     }},
                     {field: 'status', title: '状态', formatter: function (value) {
-                        var color = value === 'enabled' ? 'success' : 'gray';
-                        return '<span class="label label-' + color + '">' + escapeHtml(statusText[value] || value) + '</span>';
+                        var color = CpqCommon.statusCustom[value] || 'default';
+                        return '<span class="label label-' + color + '">' + escapeHtml(Config.statusList[value] || value) + '</span>';
                     }},
-                    {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime},
+                    {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange'},
                     {
                         field: 'operate', title: __('Operate'), table: table,
                         events: $.extend(CpqCommon.operateEvents(), {

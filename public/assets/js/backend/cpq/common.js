@@ -28,6 +28,7 @@ define(['jquery', 'table'], function ($, Table) {
             normal: 'success',
             hidden: 'gray',
             disabled: 'gray',
+            enabled: 'success',
             withdrawn: 'gray'
         },
         booleanFormatter: function (value) {

@@ -24,7 +24,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                     {field: 'name', title: '系列名称', operate: 'LIKE'},
                     {field: 'business_unit', title: '业务板块'},
                     {field: 'product_line', title: '产品线'},
-                    {field: 'default_currency', title: '币种'},
+                    {field: 'default_currency', title: '默认币种'},
                     {field: 'version', title: '版本', operate: false},
                     {field: 'status', title: '状态', searchList: Config.statusList, formatter: Table.api.formatter.status, custom: CpqCommon.statusCustom},
                     {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange'},

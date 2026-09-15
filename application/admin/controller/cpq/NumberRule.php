@@ -24,6 +24,9 @@ class NumberRule extends Backend
     /** 可写角色（auth_group.name 精确匹配） */
     const WRITE_ROLES = ['master_data_admin', 'system_admin'];
 
+    /** 启停状态字典（视图下拉与列表徽标共用同一来源） */
+    const STATUS_LIST = ['enabled' => '启用', 'disabled' => '停用'];
+
     /** @var NumberRuleService */
     private $numberRuleService;
 
@@ -35,6 +38,9 @@ class NumberRule extends Backend
         parent::_initialize();
         $this->numberRuleService = new NumberRuleService();
         $this->auditService = new AuditLogService();
+        // 状态字典单一来源下发（表单下拉与列表徽标共用，前端不硬编码文案）
+        $this->view->assign('statusList', self::STATUS_LIST);
+        $this->assignconfig('statusList', self::STATUS_LIST);
     }
 
     /**

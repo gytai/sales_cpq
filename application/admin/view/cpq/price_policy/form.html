@@ -34,12 +34,12 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">产品线:</label>
         <div class="col-xs-12 col-sm-3"><input class="form-control" name="row[product_line]" value="{$row.product_line|htmlentities}"></div>
-        <label class="control-label col-xs-12 col-sm-2">目标类型:</label>
-        <div class="col-xs-12 col-sm-3">{:build_select('row[target_type]', $targetTypeList, $row.target_type, ['class'=>'form-control selectpicker', 'data-rule'=>'required'])}</div>
+        <label class="control-label col-xs-12 col-sm-2">对象类型:</label>
+        <div class="col-xs-12 col-sm-3">{:build_select('row[target_type]', $targetTypeList, $row.target_type, ['class'=>'form-control selectpicker', 'data-rule'=>'required', 'id'=>'cpq-target-type'])}</div>
     </div>
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">目标ID:</label>
-        <div class="col-xs-12 col-sm-3"><input class="form-control" data-rule="required" type="number" min="1" name="row[target_id]" value="{$row.target_id|htmlentities}"></div>
+        <label class="control-label col-xs-12 col-sm-2">定价对象:</label>
+        <div class="col-xs-12 col-sm-3"><input class="form-control" id="cpq-target-id" data-source="cpq/price_entry/selecttarget" data-field="name" data-primary-key="id" data-rule="required" name="row[target_id]" value="{$row.target_id|htmlentities}"></div>
         <label class="control-label col-xs-12 col-sm-2">币种:</label>
         <div class="col-xs-12 col-sm-3"><input class="form-control" maxlength="3" name="row[currency]" value="{$row.currency|htmlentities}"></div>
     </div>

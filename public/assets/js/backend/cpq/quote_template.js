@@ -117,12 +117,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                     {field: 'language', title: '语言', searchList: Config.languageList, formatter: function (value) {
                         return escapeHtml((Config.languageList && Config.languageList[value]) || value);
                     }},
-                    {field: 'market_scope', title: '适用市场', searchList: Config.marketList, formatter: function (value) {
+                    {field: 'market_scope', title: '市场范围', searchList: Config.marketList, formatter: function (value) {
                         return escapeHtml((Config.marketList && Config.marketList[value]) || value);
                     }},
                     {field: 'paper_size', title: '纸张', operate: false},
                     {field: 'is_default', title: '市场默认', operate: false, formatter: CpqCommon.booleanFormatter},
-                    {field: 'version', title: '版本', operate: false, formatter: function (value) { return 'v' + escapeHtml(value); }},
+                    {field: 'version', title: '版本', operate: false},
                     {field: 'status', title: '状态', searchList: Config.statusList, custom: statusCustom, formatter: Table.api.formatter.status},
                     {field: 'updatetime', title: '更新时间', formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange'},
                     {

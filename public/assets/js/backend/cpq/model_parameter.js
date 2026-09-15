@@ -10,7 +10,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'backend/cpq/common']
                 {field: 'parameter_definition.name', title: '技术参数', operate: 'LIKE'},
                 {field: 'value', title: '参数值', operate: 'LIKE'},
                 {field: 'is_configurable', title: '可配置', searchList: {'1': '是', '0': '否'}, formatter: CpqCommon.booleanFormatter},
-                {field: 'is_required', title: '必填', searchList: {'1': '是', '0': '否'}, formatter: CpqCommon.booleanFormatter},
+                {field: 'is_required', title: '必选', searchList: {'1': '是', '0': '否'}, formatter: CpqCommon.booleanFormatter},
                 {field: 'sort', title: '排序'},
                 {field: 'operate', title: __('Operate'), table: table, events: CpqCommon.operateEvents(), buttons: [CpqCommon.detailButton(baseUrl)], formatter: Table.api.formatter.operate}
             ]]});

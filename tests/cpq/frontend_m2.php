@@ -58,5 +58,10 @@ checkM2(strpos($priceEntryController, "post('q_word/a', [])") !== false, '定价
 checkM2(substr_count($priceEntryController, '$applyFilter(Db::name($table))') === 2, '定价对象下拉的计数和列表未使用相同筛选条件');
 checkM2(strpos($priceEntryForm, 'cpq/price_entry/selectbook') !== false, '价格条目表单未使用可维护价格表数据源');
 checkM2(strpos($priceEntryController, "where('status', 'in', ['draft', 'pending'])") !== false, '价格表下拉未排除已发布和已失效版本');
+// GYTAI-85：公司改下拉（来源已发布价格表），选项加价轨迹展示选项名称
+checkM2(strpos($pricingView, '<select class="form-control selectpicker" name="company"') !== false
+    && strpos($pricingView, 'name="companyList" item="company"') !== false, '模拟器公司仍为手填文本框，未改为价格表公司下拉');
+checkM2(strpos($pricingController, 'companyOptions') !== false, '模拟器未下发公司下拉选项');
+checkM2(strpos($pricingJs, 'option_name') !== false && strpos($pricingJs, 'group_name') !== false, '选项加价轨迹未展示选项组/选项名称');
 
 echo 'M2 frontend contract tests: PASS (' . $assertions . " assertions)\n";

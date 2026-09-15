@@ -260,6 +260,8 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'backend/cpq/common'], functio
         return html + '</tbody></table>';
     }
     function emptyNote(text) { return '<p class="text-muted" style="margin-bottom:0;">' + escape(text) + '</p>'; }
+    // 编码 · 名称（GYTAI-85）：当前轨迹 items 携带名称，旧导出文件无名称时仅展示编码
+    function codeNameText(code, name) { return escape(code) + (name ? ' · ' + escape(name) : ''); }
 
     function stepDetail(step) {
         var html = '';
@@ -276,8 +278,8 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'backend/cpq/common'], functio
                 if (!step.items || !step.items.length) { return emptyNote('未选择配置选项，按 0 计'); }
                 return itemList($.map(step.items, function (item) {
                     return [[
-                        escape(item.group_code),
-                        escape(item.option_code),
+                        codeNameText(item.group_code, item.group_name),
+                        codeNameText(item.option_code, item.option_name),
                         money(item.unit_price),
                         escape(item.default_qty),
                         '<strong>' + money(item.amount) + '</strong>' + (item.has_price_entry ? '' : ' <span class="text-warning">（无价格条目，按 0 计）</span>')

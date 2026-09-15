@@ -385,7 +385,9 @@ class PricingService
             'price_entry' => $this->entrySnapshot($baseEntry),
         ]);
 
-        // 2. 选项增量价（选中项 × 默认数量；无条目按 0 计并记录）
+        // 2. 选项增量价（选中项 × 默认数量；无条目按 0 计并记录）。
+        //    items 携带选项组/选项名称供轨迹展示（GYTAI-85）；名称进入
+        //    price_hash 覆盖范围，跨代码版本哈希会变，版本内仍确定性。
         $optionsAmount = Money::of('0', $pricingCurrency);
         $optionItems = [];
         foreach ($selectedOptions as $selected) {
@@ -398,7 +400,9 @@ class PricingService
             $optionsAmount = $optionsAmount->add($lineAmount);
             $optionItems[] = [
                 'group_code' => $selected['group_code'],
+                'group_name' => $selected['group_name'],
                 'option_code' => $selected['option_code'],
+                'option_name' => $selected['option_name'],
                 'option_id' => (int)$selected['option_id'],
                 'unit_price' => $unitPrice->getAmount(),
                 'default_qty' => $optionQty,
@@ -1646,7 +1650,9 @@ class PricingService
                 }
                 $selected[] = [
                     'group_code' => (string)$group['code'],
+                    'group_name' => (string)$group['name'],
                     'option_code' => (string)$option['code'],
+                    'option_name' => (string)$option['name'],
                     'option_id' => (int)$option['id'],
                     'default_qty' => $option['default_qty'] !== null && (string)$option['default_qty'] !== ''
                         ? (string)$option['default_qty'] : '1',

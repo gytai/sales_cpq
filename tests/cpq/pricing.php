@@ -545,6 +545,8 @@ foreach ($rulesStep['matched'] as $item) {
 check($baseRule['before'] === '120000.0000' && $baseRule['after'] === '114000.0000', '基础价折扣规则（九五折）：120000→114000');
 check($optionRule['before'] === '8000.0000' && $optionRule['after'] === '8500.0000', '选项加价规则：8000→8500');
 check(stepOf($line, 'option_prices')['items'][0]['unit_price'] === '8000.0000', '选项原始价 8000 来自价格条目');
+check(stepOf($line, 'option_prices')['items'][0]['group_name'] === '功率等级'
+    && stepOf($line, 'option_prices')['items'][0]['option_name'] === '高功率', '选项加价轨迹携带选项组/选项名称（GYTAI-85）');
 // 小计链：128000 → 互斥组高优先级 -1000=127000 → 一口价 100000 → 叠加 -100/-200=99700 → 五折 49850 → 保底 60000
 check(in_array('CPQ-TEST-RULE-EXCL-HI', $appliedCodes, true), '互斥组高优先级规则生效');
 check(in_array('CPQ-TEST-RULE-EXCL-LO', $suppressedCodes, true) && !in_array('CPQ-TEST-RULE-EXCL-LO', $appliedCodes, true), '互斥组低优先级规则被抑制并记录');

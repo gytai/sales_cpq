@@ -35,7 +35,24 @@ class Pricing extends Backend
             SensitiveFieldService::LINE_ACCESS_ROLES
         )));
         $this->view->assign('canViewCompanyFloor', (bool)array_intersect($roles, SensitiveFieldService::FULL_ACCESS_ROLES));
+        $this->view->assign('companyList', $this->companyOptions());
         return $this->view->fetch();
+    }
+
+    /**
+     * 我方公司下拉选项（GYTAI-85）：取已发布价格表的 company 去重，与
+     * 报价向导 Quote::companyOptions 同口径，保证模拟器所选公司必然来自
+     * 价格表数据，避免手填不存在公司（空值仍表示不限，按范围匹配）。
+     */
+    private function companyOptions()
+    {
+        $companies = Db::name('cpq_price_book')
+            ->where('status', 'published')
+            ->group('company')
+            ->column('company');
+        return array_values(array_filter(array_map('strval', $companies), function ($company) {
+            return $company !== '';
+        }));
     }
 
     public function calculate()

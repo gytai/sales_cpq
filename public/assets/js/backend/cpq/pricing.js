@@ -1,25 +1,180 @@
 define(['jquery', 'bootstrap', 'backend', 'form', 'backend/cpq/common'], function ($, undefined, Backend, Form, CpqCommon) {
     'use strict';
     var lastSafeResult = null;
+    // ------------------------------------------------------------------
+    // 交互配置（GYTAI-84）：配置组与配件/服务不再手工编辑 JSON，选择产品
+    // 型号后从 cpq/pricing/context 拉取配置结构与配件清单渲染控件；
+    // 合法性校验仍在 calculate/explain 服务端执行，前端只收集选择结果。
+    // ------------------------------------------------------------------
+    var currentSchema = null;
+    var accessoryCatalog = [];
     function escape(value) { return $('<span>').text(value == null ? '' : String(value)).html(); }
-    function jsonField(name, fallback) {
-        var raw = $.trim($('[name="' + name + '"]').val() || '');
-        if (!raw) { return fallback; }
-        var parsed = JSON.parse(raw);
-        if ((name === 'configuration' && (!parsed || Array.isArray(parsed) || typeof parsed !== 'object')) ||
-            (name === 'accessories' && !Array.isArray(parsed))) {
-            throw new Error(name === 'configuration' ? '配置 JSON 必须是对象' : '配件/服务 JSON 必须是数组');
-        }
-        return parsed;
+
+    function collectConfiguration() {
+        var configuration = {};
+        $.each((currentSchema && currentSchema.groups) || [], function (_, group) {
+            if (group.input_type === 'readonly') { return; }
+            var name = 'cpq-cfg-' + group.code;
+            if (group.input_type === 'multiple') {
+                var selected = [];
+                $('[name="' + name + '"]:checked').each(function () { selected.push($(this).val()); });
+                if (selected.length) { configuration[group.code] = selected; }
+            } else {
+                var field = $('[name="' + name + '"]');
+                var value = group.input_type === 'single' ? field.filter(':checked').val() : field.val();
+                if (value !== undefined && value !== '') { configuration[group.code] = value; }
+            }
+        });
+        return configuration;
     }
+
+    function collectAccessories() {
+        var accessories = [];
+        $('#cpq-accessory-rows > .row').each(function () {
+            var id = $.trim($(this).find('select').val() || '');
+            if (!id) { return; }
+            accessories.push({id: id, quantity: $(this).find('input[type="number"]').val() || '1'});
+        });
+        return accessories;
+    }
+
+    function updateConfigPreview() {
+        $('#cpq-config-json pre').text(JSON.stringify({
+            configuration: collectConfiguration(),
+            accessories: collectAccessories()
+        }, null, 2));
+    }
+
+    function renderConfigGroups() {
+        var container = $('#cpq-config-groups').empty();
+        var groups = (currentSchema && currentSchema.groups) || [];
+        var renderable = $.grep(groups, function (group) { return group.input_type !== 'readonly'; });
+        if (!renderable.length) {
+            container.html('<p class="help-block" style="margin-bottom:0;">' + (groups.length ? '该型号仅含自动计算项，无需选择。' : '该型号没有已发布的配置组，按基础价计价。') + '</p>');
+            updateConfigPreview();
+            return;
+        }
+        $.each(renderable, function (_, group) {
+            var panel = $('<div class="panel panel-default" style="margin-bottom:8px;"></div>').attr('data-group-code', group.code);
+            var heading = $('<div class="panel-heading" style="padding:6px 10px;"></div>');
+            heading.append($('<strong></strong>').text(group.name));
+            if (group.is_required) {
+                heading.append(' ').append('<span class="label label-danger">必选</span>');
+            }
+            heading.append($('<code class="pull-right"></code>').text(group.code));
+            var body = $('<div class="panel-body" style="padding:6px 10px;"></div>');
+            if (group.help_text) {
+                body.append($('<p class="help-block" style="margin-bottom:6px;"></p>').text(group.help_text));
+            }
+            if (group.input_type === 'single') {
+                $.each(group.options || [], function (_, option) {
+                    var label = $('<label class="radio-inline"></label>');
+                    var input = $('<input type="radio">').attr({name: 'cpq-cfg-' + group.code, value: option.code});
+                    if (group.default_value === option.code) {
+                        input.prop('checked', true);
+                    }
+                    label.append(input).append(document.createTextNode(' ' + option.name));
+                    body.append(label);
+                });
+            } else if (group.input_type === 'multiple') {
+                var defaults = $.isArray(group.default_value) ? group.default_value : [];
+                $.each(group.options || [], function (_, option) {
+                    var label = $('<label class="checkbox-inline"></label>');
+                    var input = $('<input type="checkbox">').attr({name: 'cpq-cfg-' + group.code, value: option.code});
+                    if ($.inArray(option.code, defaults) !== -1) {
+                        input.prop('checked', true);
+                    }
+                    label.append(input).append(document.createTextNode(' ' + option.name));
+                    body.append(label);
+                });
+            } else if (group.input_type === 'number') {
+                body.append($('<input type="number" step="any" class="form-control input-sm">')
+                    .attr('name', 'cpq-cfg-' + group.code)
+                    .val(group.default_value === null || group.default_value === undefined ? '' : group.default_value));
+            } else {
+                body.append($('<input type="text" class="form-control input-sm">')
+                    .attr('name', 'cpq-cfg-' + group.code)
+                    .val(group.default_value === null || group.default_value === undefined ? '' : group.default_value));
+            }
+            panel.append(heading).append(body);
+            container.append(panel);
+        });
+        updateConfigPreview();
+    }
+
+    function accessoryOptionLabel(item) {
+        var label = item.code + ' · ' + item.name;
+        if (item.type) { label += '（' + item.type + '）'; }
+        if (item.unit) { label += ' 单位 ' + item.unit; }
+        return label;
+    }
+
+    function appendAccessoryRow() {
+        var row = $('<div class="row" style="margin-bottom:6px;"></div>');
+        // 控件不带 name，避免混入表单序列化；数值统一以字符串提交，由服务端解析
+        var select = $('<select class="form-control input-sm"></select>');
+        select.append($('<option value=""></option>').text('请选择配件/服务'));
+        var lines = {};
+        $.each(accessoryCatalog, function (_, item) {
+            var line = item.product_line || '通用';
+            (lines[line] = lines[line] || []).push(item);
+        });
+        $.each(Object.keys(lines).sort(), function (_, line) {
+            var group = $('<optgroup></optgroup>').attr('label', '产品线 ' + line);
+            $.each(lines[line], function (_, item) {
+                group.append($('<option></option>').attr('value', item.id).text(accessoryOptionLabel(item)));
+            });
+            select.append(group);
+        });
+        var quantity = $('<input type="number" min="1" step="1" class="form-control input-sm">').val('1');
+        var remove = $('<button type="button" class="btn btn-danger btn-sm" title="移除本行"><i class="fa fa-trash"></i></button>');
+        remove.on('click', function () { row.remove(); updateConfigPreview(); });
+        row.append($('<div class="col-xs-7"></div>').append(select))
+            .append($('<div class="col-xs-3"></div>').append(quantity))
+            .append($('<div class="col-xs-2"></div>').append(remove));
+        $('#cpq-accessory-rows').append(row);
+        updateConfigPreview();
+    }
+
+    function resetInteractiveConfig() {
+        currentSchema = null;
+        accessoryCatalog = [];
+        $('#cpq-accessory-rows').empty();
+        $('#cpq-accessory-add').prop('disabled', true);
+        updateConfigPreview();
+    }
+
+    function loadContext() {
+        var modelId = $.trim($('[name="model_id"]').val() || '');
+        resetInteractiveConfig();
+        if (!modelId) {
+            $('#cpq-config-groups').html('<p class="help-block" style="margin-bottom:0;">选择产品型号后按配置组交互选择，默认值已预填。</p>');
+            return;
+        }
+        Fast.api.ajax({url: 'cpq/pricing/context', type: 'get', data: {model_id: modelId}}, function (context) {
+            currentSchema = (context && context.schema) || null;
+            accessoryCatalog = (context && context.accessories) || [];
+            renderConfigGroups();
+            $('#cpq-accessory-add').prop('disabled', !accessoryCatalog.length);
+            return false;
+        }, function (data, ret) {
+            $('#cpq-config-groups').html('<p class="text-warning" style="margin-bottom:0;">' + escape((ret && ret.msg) || '加载配置结构失败') + '</p>');
+            return false;
+        });
+    }
+
     function payload() {
         var data = {};
-        $.each($('#cpq-pricing-form').serializeArray(), function (_, item) { data[item.name] = item.value; });
+        $.each($('#cpq-pricing-form').serializeArray(), function (_, item) {
+            // 配置组交互输入（cpq-cfg- 前缀）单独收集为 configuration 对象
+            if (item.name.indexOf('cpq-cfg-') === 0) { return; }
+            data[item.name] = item.value;
+        });
         data.model_id = String(data.model_id || '');
         data.customer_id = String(data.customer_id || '');
         data.quantity = String(data.quantity || '1');
-        data.configuration = jsonField('configuration', {});
-        data.accessories = jsonField('accessories', []);
+        data.configuration = collectConfiguration();
+        data.accessories = collectAccessories();
         if (!data.manual_discount) { delete data.manual_discount; delete data.discount_reason; }
         if (!data.currency) { delete data.currency; }
         return data;
@@ -359,6 +514,10 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'backend/cpq/common'], functio
     }
     var Controller = {index:function () {
         Form.api.bindevent($('#cpq-pricing-form'));
+        // 选择产品型号后加载交互配置结构（selectpage 选中与手工清空都会触发 change）
+        $('#cpq-pricing-form').on('change', '[name="model_id"]', loadContext);
+        $('#cpq-pricing-form').on('change input', '#cpq-config-groups input,#cpq-accessory-rows', updateConfigPreview);
+        $('#cpq-accessory-add').on('click', appendAccessoryRow);
         $('#cpq-calculate').on('click', function () { request('calculate'); });
         $('#cpq-explain').on('click', function () { request('explain'); });
         $('#cpq-export').on('click', function () {

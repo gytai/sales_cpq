@@ -18,8 +18,16 @@
                     <div class="form-group"><label>报价币种</label><input class="form-control" maxlength="3" name="currency" value="CNY"></div>
                     <div class="form-group"><label>产品型号</label><input class="form-control selectpage" data-source="cpq/product_model/index" data-field="name" data-rule="required" name="model_id"></div>
                     <div class="form-group"><label>数量</label><input class="form-control" name="quantity" value="1" data-rule="required;decimal"></div>
-                    <div class="form-group"><label>配置 JSON</label><textarea class="form-control" rows="4" name="configuration" placeholder='{"POWER":"HIGH"}'>{}</textarea><span class="help-block">对象键为配置组编码，值为选项编码或值。</span></div>
-                    <div class="form-group"><label>配件/服务 JSON</label><textarea class="form-control" rows="3" name="accessories" placeholder='[{"id":1,"quantity":"1"}]'>[]</textarea></div>
+                    <div class="form-group"><label>产品配置</label>
+                        <div id="cpq-config-groups"><p class="help-block" style="margin-bottom:0;">选择产品型号后按配置组交互选择，默认值已预填。</p></div>
+                        <a href="#cpq-config-json" data-toggle="collapse">查看生成的配置/加购 JSON</a>
+                        <div id="cpq-config-json" class="collapse"><pre class="small" style="white-space:pre-wrap;margin-bottom:0;">{}</pre></div>
+                    </div>
+                    <div class="form-group"><label>配件/服务加购</label>
+                        <div id="cpq-accessory-rows"></div>
+                        <button type="button" id="cpq-accessory-add" class="btn btn-default btn-sm" disabled><i class="fa fa-plus"></i> 添加配件/服务</button>
+                        <span class="help-block">选择产品型号后可按行添加配件/服务并填写数量。</span>
+                    </div>
                     <div class="form-group"><label>手工折扣（0～1）</label><input class="form-control" name="manual_discount" placeholder="例如 0.95"></div>
                     <div class="form-group"><label>折扣原因</label><textarea class="form-control" rows="2" name="discount_reason"></textarea></div>
                     <button type="button" class="btn btn-primary" id="cpq-calculate"><i class="fa fa-calculator"></i> 试算</button>

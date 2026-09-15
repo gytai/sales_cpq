@@ -31,6 +31,7 @@ foreach ($pages as $page) {
 }
 
 $pricingJs = file_get_contents($root . '/public/assets/js/backend/cpq/pricing.js');
+$pricingView = file_get_contents($root . '/application/admin/view/cpq/pricing/index.html');
 $policyJs = file_get_contents($root . '/public/assets/js/backend/cpq/price_policy.js');
 $policyForm = file_get_contents($root . '/application/admin/view/cpq/price_policy/form.html');
 $priceEntryForm = file_get_contents($root . '/application/admin/view/cpq/price_entry/form.html');
@@ -48,6 +49,11 @@ checkM2(strpos($pricingController, 'maskForRoles') !== false, '模拟器响应�
 checkM2(strpos($policyController, 'maskRows') !== false, '价格矩阵列表未调用字段级脱敏');
 checkM2(strpos($pricingController, 'SensitiveFieldService::rolesOfAdmin') !== false, '模拟器未从服务端会话解析角色');
 checkM2(strpos($pricingJs, 'JSON.stringify(lastSafeResult') !== false, '安全轨迹导出未使用脱敏响应缓存');
+// GYTAI-84：配置/加购不再要求操作员手写 JSON，改成交互控件
+checkM2(strpos($pricingView, 'name="configuration"') === false && strpos($pricingView, 'name="accessories"') === false, '模拟器仍暴露配置/配件 JSON 文本域');
+checkM2(strpos($pricingView, 'cpq-config-groups') !== false && strpos($pricingView, 'cpq-accessory-add') !== false, '模拟器缺少配置组/加购交互容器');
+checkM2(strpos($pricingJs, 'cpq/pricing/context') !== false, '模拟器未从后台拉取交互配置上下文');
+checkM2(strpos($pricingController, 'public function context()') !== false, '模拟器缺少交互配置上下文接口');
 checkM2(strpos($priceEntryController, "post('q_word/a', [])") !== false, '定价对象下拉未按数组读取 selectpage 搜索词');
 checkM2(substr_count($priceEntryController, '$applyFilter(Db::name($table))') === 2, '定价对象下拉的计数和列表未使用相同筛选条件');
 checkM2(strpos($priceEntryForm, 'cpq/price_entry/selectbook') !== false, '价格条目表单未使用可维护价格表数据源');

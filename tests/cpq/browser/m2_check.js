@@ -32,7 +32,7 @@ let browser;
     if (cookies.length) await page.deleteCookie(...cookies);
     await open(page, '/index/login');
     await page.waitForSelector('#pd-form-username', {timeout:10000});
-    await page.type('#pd-form-username', 'cpq_sales_test'); await page.type('#pd-form-password', PASSWORD);
+    await page.type('#pd-form-username', 'cpq_sales'); await page.type('#pd-form-password', 'Appr@123456');
     await Promise.all([page.waitForNavigation({waitUntil:'networkidle0',timeout:30000}),page.click('#login-form button[type=submit]')]);
     await open(page, '/cpq/price_policy/index'); await rows(page, '#table');
     const salesMatrix = await page.evaluate(() => ({headers:Array.from(document.querySelectorAll('#table th')).map(x=>x.innerText.trim()),text:$('#table').text()}));
@@ -49,9 +49,27 @@ let browser;
     await open(page, '/cpq/pricing/index'); await page.waitForSelector('#cpq-pricing-form');
     await page.evaluate(() => {
         $('[name="date"]').val('2026-09-01'); $('[name="customer_id"]').val('1'); $('[name="company"]').val('DEMO公司'); $('[name="market_scope"]').val('domestic'); $('[name="currency"]').val('CNY');
-        $('[name="model_id"]').val('1'); $('[name="quantity"]').val('1'); $('[name="configuration"]').val('{"power_level":"standard","features":["monitoring"],"quantity":"1"}'); $('[name="accessories"]').val('[]');
-        $('#cpq-explain').click();
+        $('[name="model_id"]').val('1'); $('[name="quantity"]').val('1'); $('[name="model_id"]').trigger('change');
     });
+    // GYTAI-84：配置改为交互控件，选择型号后加载配置组（power_level 默认 standard 预填）
+    await page.waitForFunction(() => document.querySelectorAll('#cpq-config-groups [data-group-code]').length > 0, {timeout: 20000});
+    await page.waitForFunction(() => !document.querySelector('#cpq-accessory-add').disabled, {timeout: 20000});
+    const interactiveConfig = await page.evaluate(() => {
+        const groups = Array.from(document.querySelectorAll('#cpq-config-groups [data-group-code]')).map(x => x.getAttribute('data-group-code'));
+        // 交互选择：features 勾选 monitoring，quantity 配置组填 1，加购一行配件再移除
+        $('#cpq-config-groups [name="cpq-cfg-features"][value="monitoring"]').prop('checked', true).trigger('change');
+        $('#cpq-config-groups [name="cpq-cfg-quantity"]').val('1').trigger('input');
+        $('#cpq-accessory-add').click();
+        $('#cpq-accessory-rows select').first().val($('#cpq-accessory-rows select option:last').val()).trigger('change');
+        $('#cpq-accessory-rows input[type="number"]').val('2').trigger('input');
+        const withAccessory = $('#cpq-config-json pre').text();
+        $('#cpq-accessory-rows .btn-danger').click();
+        return {groups, withAccessory, afterRemove: $('#cpq-config-json pre').text()};
+    });
+    check(interactiveConfig.groups.includes('power_level') && interactiveConfig.groups.includes('features'), 'GYTAI-84 配置组交互渲染', JSON.stringify(interactiveConfig.groups));
+    check(interactiveConfig.withAccessory.includes('"accessories": [\n    {\n      "id":'), 'GYTAI-84 加购行进入提交负载', interactiveConfig.withAccessory);
+    check(interactiveConfig.afterRemove.includes('"accessories": []'), 'GYTAI-84 移除加购行后负载清空', interactiveConfig.afterRemove);
+    await page.evaluate(() => { $('#cpq-explain').click(); });
     await page.waitForFunction(() => (!document.querySelector('#cpq-pricing-result').classList.contains('hidden') && document.querySelector('#cpq-total').innerText !== '—') || !document.querySelector('#cpq-pricing-error').classList.contains('hidden'), {timeout:20000});
     const pricingError = await page.evaluate(() => $('#cpq-pricing-error').hasClass('hidden') ? '' : $('#cpq-pricing-error').text());
     if (pricingError) throw new Error('P36 试算失败：' + pricingError);

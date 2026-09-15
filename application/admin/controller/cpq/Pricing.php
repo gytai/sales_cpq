@@ -4,8 +4,10 @@ namespace app\admin\controller\cpq;
 
 use app\common\controller\Backend;
 use app\common\library\cpq\PricingException;
+use app\common\repository\cpq\ConfigurationSchemaRepository;
 use app\common\service\cpq\PricingService;
 use app\common\service\cpq\SensitiveFieldService;
+use think\Db;
 
 /**
  * 价格模拟器（P36，GYTAI-68）
@@ -39,6 +41,36 @@ class Pricing extends Backend
     public function calculate()
     {
         $this->handle(false);
+    }
+
+    /**
+     * 交互配置上下文（GYTAI-84）：返回型号的已发布配置结构与可加购的
+     * 配件/服务清单，前端据此渲染交互控件，替代手工编辑 JSON。
+     * 配置结构只下发渲染所需的 model/groups，规则校验仍在 calculate 服务端执行。
+     */
+    public function context()
+    {
+        $modelId = (int)$this->request->request('model_id');
+        if ($modelId <= 0) {
+            $this->error('请选择产品型号');
+        }
+        try {
+            $schema = (new ConfigurationSchemaRepository())->getPublishedSchema($modelId);
+        } catch (\think\exception\HttpResponseException $exception) {
+            // TP5 的 error/success 以该异常中断执行，必须重抛，不能当业务异常吞掉
+            throw $exception;
+        } catch (\Throwable $exception) {
+            $this->error($exception->getMessage());
+        }
+        $accessories = Db::name('cpq_accessory_service')
+            ->field('id,code,type,name,unit,product_line')
+            ->where('status', 'normal')
+            ->order('product_line asc,code asc')
+            ->select();
+        $this->success('', null, [
+            'schema' => ['model' => $schema['model'], 'groups' => $schema['groups']],
+            'accessories' => $accessories,
+        ]);
     }
 
     public function explain()

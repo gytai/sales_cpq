@@ -94,7 +94,7 @@ class MenuRuleService
             'cpq/fee_rule' => ['费用规则', 'fa fa-truck', 70, array_merge($simpleActions, ['importpreview' => '导入预览'])],
             'cpq/release_version' => ['发布版本', 'fa fa-tags', 65, ['index' => '查看', 'withdraw' => '撤回', 'rollback' => '回滚发布']],
             // 价格模拟器（P36）：页面视图由 GYTAI-74 交付，菜单可见
-            'cpq/pricing' => ['价格模拟器', 'fa fa-calculator', 60, ['index' => '查看', 'calculate' => '价格试算', 'explain' => '价格解释']],
+            'cpq/pricing' => ['价格模拟器', 'fa fa-calculator', 60, ['index' => '查看', 'context' => '读取交互配置上下文', 'calculate' => '价格试算', 'explain' => '价格解释']],
         ];
         foreach ($priceControllers as $controller => $definition) {
             $controllerId = $this->upsertMenuRule([
